@@ -49,6 +49,7 @@ class MainWeatherVC: UIViewController {
         view.register(CellHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: CellHeaderView.identifier)
         
         view.register(TodayCollectionViewCell.self, forCellWithReuseIdentifier: TodayCollectionViewCell.identifier)
+        view.register(DayCollectionViewCell.self, forCellWithReuseIdentifier: DayCollectionViewCell.identifier)
         view.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
         view.backgroundColor = .white
         
@@ -81,11 +82,16 @@ class MainWeatherVC: UIViewController {
         dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
             if indexPath.section == 0 {
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TodayCollectionViewCell.identifier, for: indexPath) as! TodayCollectionViewCell
-                cell.configure(with: "test", icon: "test", temp: "test")
-                
+                cell.configure(with: "time", icon: "icon", temp: "temp")
                 
                 return cell
-            } else {
+            } else if indexPath.section == 1 {
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DayCollectionViewCell.identifier, for: indexPath) as! DayCollectionViewCell
+                cell.configure(with: "time", icon: "icon", lowTemp: "lowTemp", highTemp: "highTemp")
+                
+                return cell
+            }
+            else {
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
                 cell.backgroundColor = .yellow
                 
