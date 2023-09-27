@@ -25,6 +25,7 @@
 		EB2D519B2AC44404007859A8 /* WeatherAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB2D519A2AC44404007859A8 /* WeatherAPIService.swift */; };
 		EB2D519E2AC4442D007859A8 /* WeatherViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB2D519D2AC4442D007859A8 /* WeatherViewController.swift */; };
 		EB2D51A02AC44D89007859A8 /* KeyList.plist in Resources */ = {isa = PBXBuildFile; fileRef = EB2D519F2AC44D89007859A8 /* KeyList.plist */; };
+		EB2D51A22AC45100007859A8 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB2D51A12AC45100007859A8 /* LocationManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +49,7 @@
 		EB2D519A2AC44404007859A8 /* WeatherAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherAPIService.swift; sourceTree = "<group>"; };
 		EB2D519D2AC4442D007859A8 /* WeatherViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherViewController.swift; sourceTree = "<group>"; };
 		EB2D519F2AC44D89007859A8 /* KeyList.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = KeyList.plist; sourceTree = "<group>"; };
+		EB2D51A12AC45100007859A8 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -163,6 +165,7 @@
 			children = (
 				EB2D51982AC443E9007859A8 /* WeatherViewModel.swift */,
 				EB2D519A2AC44404007859A8 /* WeatherAPIService.swift */,
+				EB2D51A12AC45100007859A8 /* LocationManager.swift */,
 			);
 			path = DayWeatherViewModels;
 			sourceTree = "<group>";
@@ -250,6 +253,7 @@
 				EB2D519E2AC4442D007859A8 /* WeatherViewController.swift in Sources */,
 				EB2D51992AC443E9007859A8 /* WeatherViewModel.swift in Sources */,
 				D6B1E3912AC40A040082934A /* BackgroundReusableView.swift in Sources */,
+				EB2D51A22AC45100007859A8 /* LocationManager.swift in Sources */,
 				EB2D518E2AC44362007859A8 /* WeatherTitleView.swift in Sources */,
 				D6B1E38F2AC409D60082934A /* CellHeaderView.swift in Sources */,
 				EB2D51952AC443B4007859A8 /* Weather.swift in Sources */,

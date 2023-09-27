@@ -16,7 +16,7 @@ enum NetworkError: Error {
 
 class WeatherAPIService {
     // .plist에서 API Key 가져오기
-    private var apiKey: String {
+    var apiKey: String {
         get {
             // 생성한 .plist 파일 경로 불러오기
             guard let filePath = Bundle.main.path(forResource: "KeyList", ofType: "plist") else {
@@ -35,28 +35,56 @@ class WeatherAPIService {
     }
     
     func getWeather(completion: @escaping (Result<dayWeather, NetworkError>) -> Void) {
-            
-            // API 호출을 위한 URL
-            let url = URL(string: "https://api.openweathermap.org/data/2.5/weather?q=seoul&appid=\(apiKey)")
-            guard let url = url else {
-                return completion(.failure(.badUrl))
+        
+        // API 호출을 위한 URL
+        let url = URL(string: "https://api.openweathermap.org/data/2.5/weather?q=seoul&appid=\(apiKey)")
+        guard let url = url else {
+            return completion(.failure(.badUrl))
+        }
+        
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let data = data, error == nil else {
+                return completion(.failure(.noData))
             }
             
-            URLSession.shared.dataTask(with: url) { data, response, error in
-                guard let data = data, error == nil else {
-                    return completion(.failure(.noData))
-                }
-                
-                // Data 타입으로 받은 리턴을 디코드
-                let weatherResponse = try? JSONDecoder().decode(dayWeather.self, from: data)
-
-                // 성공
-                if let weatherResponse = weatherResponse {
-                    print(weatherResponse)
-                    completion(.success(weatherResponse)) // 성공한 데이터 저장
-                } else {
-                    completion(.failure(.decodingError))
-                }
-            }.resume() // 이 dataTask 시작
+            // Data 타입으로 받은 리턴을 디코드
+            let weatherResponse = try? JSONDecoder().decode(dayWeather.self, from: data)
+            
+            // 성공
+            if let weatherResponse = weatherResponse {
+                print(weatherResponse)
+                completion(.success(weatherResponse)) // 성공한 데이터 저장
+            } else {
+                completion(.failure(.decodingError))
+            }
+        }.resume() // 이 dataTask 시작
+    }
+    
+    func getLocalWeather(url: String, completion: @escaping (Result<dayWeather, NetworkError>) -> Void) {
+        
+        // API 호출을 위한 URL
+        let url = URL(string: url)
+        guard let url = url else {
+            return completion(.failure(.badUrl))
         }
+        
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let data = data, error == nil else {
+                return completion(.failure(.noData))
+            }
+            
+            // Data 타입으로 받은 리턴을 디코드
+            let weatherResponse = try? JSONDecoder().decode(dayWeather.self, from: data)
+            
+            // 성공
+            if let weatherResponse = weatherResponse {
+                print("현재 위치 날씨 정보 성공")
+                print(weatherResponse)
+                completion(.success(weatherResponse)) // 성공한 데이터 저장
+            } else {
+                print("현재 위치 날씨 정보 실패")
+                completion(.failure(.decodingError))
+            }
+        }.resume() // 이 dataTask 시작
+    }
 }
