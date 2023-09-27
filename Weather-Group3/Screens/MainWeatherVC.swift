@@ -96,18 +96,18 @@ class MainWeatherVC: UIViewController {
                 cell.backgroundColor = .yellow
                 
                 return cell
-            } 
+            }
         })
         
         dataSource.supplementaryViewProvider = { (collectionView, kind, indexPath) in
             
-                guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: CellHeaderView.identifier, for: indexPath) as? CellHeaderView else {
-                    fatalError("Could not dequeue sectionHeader: \(CellHeaderView.identifier)")
-                }
-                return sectionHeader
+            guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: CellHeaderView.identifier, for: indexPath) as? CellHeaderView else {
+                fatalError("Could not dequeue sectionHeader: \(CellHeaderView.identifier)")
+            }
+            return sectionHeader
             
             
-           
+            
         }
     }
     
@@ -246,35 +246,35 @@ class MainWeatherVC: UIViewController {
 
 extension MainWeatherVC: UIScrollViewDelegate {
     
-//    func updateOffset(offsetY: CGFloat) {
-//
-//
-//        guard offsetY < -75 else { return }
-//
-//        let diff = lastPositionY - offsetY
-//
-//        self.currentOffsetY = currentOffsetY + diff
-//        print(lastPositionY, offsetY, diff)
-//
-//        heightConstraint.constant = currentOffsetY
-//
-//        lastPositionY = offsetY
-//
-//    }
+    //    func updateOffset(offsetY: CGFloat) {
+    //
+    //
+    //        guard offsetY < -75 else { return }
+    //
+    //        let diff = lastPositionY - offsetY
+    //
+    //        self.currentOffsetY = currentOffsetY + diff
+    //        print(lastPositionY, offsetY, diff)
+    //
+    //        heightConstraint.constant = currentOffsetY
+    //
+    //        lastPositionY = offsetY
+    //
+    //    }
     
     
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
         guard scrollView.contentOffset.y <= 0 else { return }
-      
+        
         if scrollView.contentOffset.y > -260 {
             heightConstraint.constant = max(abs(scrollView.contentOffset.y), 105)
             
             mainHeaderView.topConstraint.constant = max((6 / 31) * abs(scrollView.contentOffset.y) - (630 / 31), -5)
             
             print(mainHeaderView.topConstraint.constant)
-
+            
         } else {
             heightConstraint.constant = 260
             mainHeaderView.topConstraint.constant = 30
@@ -283,9 +283,16 @@ extension MainWeatherVC: UIScrollViewDelegate {
         
     }
     
-  
+    
 }
 
 extension MainWeatherVC: UICollectionViewDelegate {
-    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        // Test: WeatherViewController 실행(임의로 isSelected 사용)
+        if indexPath.section == 0 {
+            let weatherViewController = WeatherViewController()
+            
+            present(weatherViewController, animated: true, completion: nil)
+        }
+    }
 }
