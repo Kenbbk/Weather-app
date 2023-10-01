@@ -11,8 +11,8 @@ import Foundation
 // JSON 데이터 디코딩
 struct dayWeather: Decodable {
     let weather: [Weather]
-        let main: Main
-        let name: String
+    let main: Main
+    let name: String
     // 날짜
     // 현재 온도
     // 날씨 iocn
@@ -33,4 +33,23 @@ struct Weather: Decodable {
     let main: String
     let description: String
     let icon: String
+}
+
+//struct HourlyWeather: Codable {
+//    let dt: TimeInterval // 시간 정보 (timestamp)
+//    let temp: Double // 온도
+//    // 다른 필요한 시간대별 날씨 정보 속성들을 추가할 수 있음
+//}
+
+struct WeatherData: Codable {
+    let hourly: [HourlyWeather]?
+
+    enum CodingKeys: String, CodingKey {
+        case hourly = "hourly"
+    }
+}
+
+struct HourlyWeather: Codable {
+    let dt: Int
+    let temp: Double
 }
