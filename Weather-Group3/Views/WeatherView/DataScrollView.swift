@@ -19,7 +19,7 @@ class DateScrollView: UIScrollView {
     // StackView의 Label Size
     var labelSize: CGFloat = 15
     
-    var dataSource: [SomeDataModel]? {
+    var dataSource: [DayDataModel]? {
         didSet { bind() }
     }
     
