@@ -11,8 +11,7 @@ import CoreLocation
 
 class WeatherViewController: UIViewController, CLLocationManagerDelegate {
     
-    let locationManager = CLLocationManager()
-    
+    // MARK: View 목록
     lazy var weatherView: WeatherTitleView = {
         let view = WeatherTitleView()
         
@@ -34,12 +33,16 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         return view
     }()
     
+    let locationManager = CLLocationManager()
     // 받아온 데이터를 저장할 프로퍼티
     var weather: Weather?
     var main: Main?
     var name: String?
     // 현재 위치를 파악한 후 날씨 정보를 얻어오는 url
     var urlString: String = ""
+    // 시간대별 온도를 저장할 곳
+    var tempOfChart: [Double] = []
+    var timeOfChart: [String] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -48,6 +51,10 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         
         // Test: 특정 위치의 날씨정보 얻어오기
         setLocationManager()
+        
+        print("viewDidLoad")
+        print("temp : \(tempOfChart)")
+        print("time : \(timeOfChart)")
     }
     
     // 위치 업데이트를 수신할 때 호출되는 메서드
@@ -80,7 +87,18 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
                                            let temp = main["temp"] as? Double {
                                             // 날짜 및 시간대별 온도 출력
                                             print("main: \(main), Date/Time: \(dtTxt), Temperature: \(temp - 273.15) ℃")
+                                            let tempChange = temp - 273.15
+                                            self.tempOfChart.append(tempChange)
+                                            self.timeOfChart.append(dtTxt)
                                         }
+                                    }
+                                    //                                    print("locationManager")
+                                    print("temp : \(self.tempOfChart)")
+                                    print("time : \(self.timeOfChart)")
+                                    // API 호출이 완료된 후 화면 업데이트
+                                    DispatchQueue.main.async {
+                                        // 여기에서 화면 업데이트 작업 수행
+                                        self.updateUI()
                                     }
                                 }
                             }
@@ -110,6 +128,12 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         else {
             print("위치 서비스 허용 off")
         }
+    }
+    
+    func updateUI() {
+        // 여기에서 화면 업데이트 작업 수행
+        setLineChart()
+        setForecast()
     }
     
     //    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -153,6 +177,7 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         setConstraint()
         insertDataSource() // scroll View
         setTemp()
+        setLineChart()
         setForecast()
     }
     
@@ -183,7 +208,6 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     private func insertDataSource() {
-        //        dateScrollView.dataSource = Mocks.getDataSource()
         dateScrollView.dataSource = Days.getDataSource()
     }
     
@@ -193,6 +217,10 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         let lowTemp: String = "17"
         
         tempGraphView.setTemp(currentTemp: currentTemp, highTemp: highTemp, lowTemp: lowTemp)
+    }
+    
+    private func setLineChart() {
+        tempGraphView.setLineChart(temp: tempOfChart, time: timeOfChart)
     }
     
     private func setForecast() {

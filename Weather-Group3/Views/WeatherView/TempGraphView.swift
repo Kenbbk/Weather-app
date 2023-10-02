@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import Charts
 
 class TempGraphView: UIView {
     
@@ -31,7 +32,7 @@ class TempGraphView: UIView {
     }()
     
     lazy var lineView: UIView = {
-       let view = UIView()
+        let view = UIView()
         view.layer.borderWidth = 1
         view.layer.borderColor = UIColor.black.cgColor
         
@@ -56,7 +57,7 @@ class TempGraphView: UIView {
     lazy var lowTempLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: labelSize)
-    
+        
         return label
     }()
     
@@ -81,18 +82,28 @@ class TempGraphView: UIView {
         return stackView
     }()
     
+    lazy var tempLineChartView: LineChartView = {
+        let lineChartView = LineChartView()
+        
+        lineChartView.translatesAutoresizingMaskIntoConstraints = false
+        return lineChartView
+    }()
+    
     lazy var forecastLabel: UILabel = {
         let label = UILabel()
         label.text = "일기예보"
         label.font = UIFont.boldSystemFont(ofSize: labelSize)
-    
+        
         return label
     }()
     
     lazy var forecastTextView: UITextView = {
         let textView = UITextView()
         textView.font = UIFont.boldSystemFont(ofSize: labelSize)
-    
+        textView.isScrollEnabled = false // 스크롤 비활성화
+        textView.textContainerInset = .zero // 텍스트 컨테이너 여백 제거
+        textView.textContainer.lineFragmentPadding = 0 // 텍스트 줄 여백 제거
+        
         return textView
     }()
     
@@ -100,7 +111,7 @@ class TempGraphView: UIView {
         let stackView = UIStackView(arrangedSubviews: [forecastLabel, forecastTextView])
         stackView.spacing = stackViewHoirzontalSpacing
         stackView.axis = .vertical
-        stackView.distribution = .fillEqually
+        stackView.distribution = .fillProportionally
         stackView.alignment = .fill
         
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -128,6 +139,7 @@ class TempGraphView: UIView {
         addSubview(dateLabel)
         addSubview(lineView)
         addSubview(tempStackView)
+        addSubview(tempLineChartView)
         addSubview(forecastStackView)
     }
     
@@ -144,13 +156,16 @@ class TempGraphView: UIView {
             
             tempStackView.topAnchor.constraint(equalTo: lineView.bottomAnchor, constant: 10),
             tempStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: leadingTrailingConstraint),
-//            tempStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: leadingTrailingConstraint),
+            //            tempStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: leadingTrailingConstraint),
             
-            forecastStackView.topAnchor.constraint(equalTo: tempStackView.bottomAnchor, constant: 10),
+            tempLineChartView.topAnchor.constraint(equalTo: tempStackView.bottomAnchor, constant: 10),
+            tempLineChartView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: leadingTrailingConstraint),
+            tempLineChartView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -leadingTrailingConstraint),
+            tempLineChartView.bottomAnchor.constraint(equalTo: forecastStackView.topAnchor, constant: -10),
+            
             forecastStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: leadingTrailingConstraint),
             forecastStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -leadingTrailingConstraint),
-            forecastStackView.heightAnchor.constraint(equalToConstant: 200)
-//            forecastStackView.bottomAnchor.constraint(equalTo: bottomAnchor)
+            forecastStackView.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
     }
     
@@ -158,6 +173,34 @@ class TempGraphView: UIView {
         currentTempLabel.text = "\(currentTemp)\(WeatherViewModel().tempUnit)"
         highTempLabel.text = "최고:\(highTemp)\(WeatherViewModel().tempUnit) "
         lowTempLabel.text = "최저:\(lowTemp)\(WeatherViewModel().tempUnit)"
+    }
+    
+    func setLineChart(temp: [Double], time: [String]) {
+        // 시간대별 기온 데이터 (예시)
+        let temperatures: [Double] = temp
+        
+        // 시간대 데이터 (예시)
+        let timeLabels: [String] = time
+        
+        // 차트 데이터 설정
+        var entries: [ChartDataEntry] = []
+        for i in 0..<temperatures.count {
+            let entry = ChartDataEntry(x: Double(i), y: temperatures[i])
+            entries.append(entry)
+        }
+        
+        let dataSet = LineChartDataSet(entries: entries, label: "Temperature")
+        dataSet.colors = [NSUIColor.blue] // 그래프 색상 설정
+        
+        let data = LineChartData(dataSet: dataSet)
+        tempLineChartView.data = data
+        
+        // X축 설정
+        tempLineChartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: timeLabels)
+        tempLineChartView.xAxis.granularity = 1
+        
+        // 추가적인 그래프 설정
+        tempLineChartView.chartDescription.text = "Hourly Temperature Chart"
     }
     
     func setForecast(forecast: String) {
