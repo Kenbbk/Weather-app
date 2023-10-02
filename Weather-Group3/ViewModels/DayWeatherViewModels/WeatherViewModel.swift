@@ -10,42 +10,10 @@ import UIKit
 
 class WeatherViewModel {
     let tempUnit: String = "℃"
-}
-
-struct SomeDataModel {
-    enum DataModelType: String {
-        case one
-        case two
-        case three
-        case four
-        case five
-    }
     
-    let type: DataModelType
-    
-    var dayOfWeek: String {
-        return type.rawValue
-    }
-    
-    var day: String {
-        switch type {
-        case .one: return "1"
-        case .two: return "2"
-        case .three: return "3"
-        case .four: return "4"
-        case .five: return "5"
-        }
-    }
-}
-
-struct Mocks {
-    static func getDataSource() -> [SomeDataModel] {
-        return [SomeDataModel(type: .one),
-                SomeDataModel(type: .two),
-                SomeDataModel(type: .three),
-                SomeDataModel(type: .four),
-                SomeDataModel(type: .five)]
-    }
+    // 시간대별 온도를 저장할 곳
+    static var tempOfChart: [Double] = []
+    static var timeOfChart: [String] = []
 }
 
 struct DayDataModel {

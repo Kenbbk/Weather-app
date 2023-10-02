@@ -33,102 +33,21 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         return view
     }()
     
-    let locationManager = CLLocationManager()
+    
     // 받아온 데이터를 저장할 프로퍼티
     var weather: Weather?
     var main: Main?
     var name: String?
     // 현재 위치를 파악한 후 날씨 정보를 얻어오는 url
     var urlString: String = ""
-    // 시간대별 온도를 저장할 곳
-    var tempOfChart: [Double] = []
-    var timeOfChart: [String] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         configure()
-        
-        // Test: 특정 위치의 날씨정보 얻어오기
-        setLocationManager()
-        
-        print("viewDidLoad")
-        print("temp : \(tempOfChart)")
-        print("time : \(timeOfChart)")
-    }
-    
-    // 위치 업데이트를 수신할 때 호출되는 메서드
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let location = locations.first {
-            let latitude = location.coordinate.latitude
-            let longitude = location.coordinate.longitude
-            
-            // OpenWeatherMap API 엔드포인트 및 API 키 설정
-            let baseURL = "https://api.openweathermap.org/data/2.5/forecast"
-            let apiKey = WeatherAPIService().apiKey
-            let urlString = "\(baseURL)?lat=\(latitude)&lon=\(longitude)&appid=\(apiKey)"
-            
-            // URLSession을 사용하여 데이터 가져오기
-            if let url = URL(string: urlString) {
-                let session = URLSession.shared
-                let task = session.dataTask(with: url) { (data, response, error) in
-                    if let error = error {
-                        print("데이터를 가져오는 중 오류 발생: \(error)")
-                    } else if let data = data {
-                        // 데이터가 성공적으로 가져온 경우
-                        do {
-                            // JSON 디코딩
-                            if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-                                // 예보 데이터 확인
-                                if let list = json["list"] as? [[String: Any]] {
-                                    for forecast in list {
-                                        if let dtTxt = forecast["dt_txt"] as? String,
-                                           let main = forecast["main"] as? [String: Any],
-                                           let temp = main["temp"] as? Double {
-                                            // 날짜 및 시간대별 온도 출력
-                                            print("main: \(main), Date/Time: \(dtTxt), Temperature: \(temp - 273.15) ℃")
-                                            let tempChange = temp - 273.15
-                                            self.tempOfChart.append(tempChange)
-                                            self.timeOfChart.append(dtTxt)
-                                        }
-                                    }
-                                    //                                    print("locationManager")
-                                    print("temp : \(self.tempOfChart)")
-                                    print("time : \(self.timeOfChart)")
-                                    // API 호출이 완료된 후 화면 업데이트
-                                    DispatchQueue.main.async {
-                                        // 여기에서 화면 업데이트 작업 수행
-                                        self.updateUI()
-                                    }
-                                }
-                            }
-                        } catch {
-                            print("JSON 데이터 디코딩 중 오류 발생: \(error)")
-                        }
-                    }
-                }
-                task.resume()
-            }
-        }
     }
     
     // MARK: Helpers
-    // MARK: 현재 위치 파악 함수.
-    private func setLocationManager() {
-        // 델리게이트를 설정하고,
-        locationManager.delegate = self
-        // 거리 정확도
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        // 위치 사용 허용 알림
-        locationManager.requestWhenInUseAuthorization()
-        // 위치 사용을 허용하면 현재 위치 정보를 가져옴
-        if CLLocationManager.locationServicesEnabled() {
-            locationManager.startUpdatingLocation()
-        }
-        else {
-            print("위치 서비스 허용 off")
-        }
-    }
     
     func updateUI() {
         // 여기에서 화면 업데이트 작업 수행
@@ -220,7 +139,9 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     private func setLineChart() {
-        tempGraphView.setLineChart(temp: tempOfChart, time: timeOfChart)
+        print("test: WeatherViewModel().tempOfChart \(WeatherViewModel.tempOfChart)")
+        
+        tempGraphView.setLineChart(temp: WeatherViewModel.tempOfChart, time: WeatherViewModel.timeOfChart)
     }
     
     private func setForecast() {

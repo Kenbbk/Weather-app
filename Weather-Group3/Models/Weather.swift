@@ -35,12 +35,6 @@ struct Weather: Decodable {
     let icon: String
 }
 
-//struct HourlyWeather: Codable {
-//    let dt: TimeInterval // 시간 정보 (timestamp)
-//    let temp: Double // 온도
-//    // 다른 필요한 시간대별 날씨 정보 속성들을 추가할 수 있음
-//}
-
 struct WeatherData: Codable {
     let hourly: [HourlyWeather]?
 
