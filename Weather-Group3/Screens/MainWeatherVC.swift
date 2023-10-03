@@ -58,22 +58,29 @@ class MainWeatherVC: UIViewController {
     
     var dataSource: UICollectionViewDiffableDataSource<Section, Int>!
     
+    // test 231003
+    let activityIndicator = UIActivityIndicatorView(style: .large)
+    
     //MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // test 231003
+        // Indicator 임시로 테스트
+//        activityIndicator.center = view.center
+//        view.addSubview(activityIndicator)
+//        activityIndicator.startAnimating()
+        
         view.backgroundColor = .white
         configureUI()
-        configureDataSource()
-        applySnapshot()
+//        configureDataSource()
+//        applySnapshot()
         
         collectionView.delegate = self
         
         // Test: 특정 위치의 날씨정보 얻어오기
         setLocationManager()
     }
-    
-    
-    
     
     
     //MARK: - Actions
@@ -84,7 +91,17 @@ class MainWeatherVC: UIViewController {
         dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
             if indexPath.section == 0 {
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TodayCollectionViewCell.identifier, for: indexPath) as! TodayCollectionViewCell
-                cell.configure(with: "time", icon: "icon", temp: "temp")
+                // 현재 날짜만 표시
+                // test 231003
+                let daysWeather = WeatherViewModel.fiveDaysTemp[0]
+                print("indexPath.row: \(indexPath.row)")
+                if indexPath.row < daysWeather.time.count {
+                    print("daysWeather.time[indexPath.row]: \(daysWeather.time[indexPath.row])")
+                    cell.configure(with: daysWeather.time[indexPath.row], icon: "icon", temp: daysWeather.temp[indexPath.row])
+                } else {
+                    cell.configure(with: "빈칸", icon: "icon", temp: 0)
+                }
+                
                 
                 return cell
             } else if indexPath.section == 1 {
@@ -341,22 +358,56 @@ extension MainWeatherVC: CLLocationManagerDelegate {
                             if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
                                 // 예보 데이터 확인
                                 if let list = json["list"] as? [[String: Any]] {
+                                    
+                                    // 같은 날짜끼리 묶기
+                                    var dayParts: [String] = []
+                                    
+                                    
                                     for forecast in list {
                                         if let dtTxt = forecast["dt_txt"] as? String,
                                            let main = forecast["main"] as? [String: Any],
                                            let temp = main["temp"] as? Double {
                                             // 날짜 및 시간대별 온도 출력
-//                                            print("main: \(main), Date/Time: \(dtTxt), Temperature: \(temp - 273.15) ℃")
+                                            //                                            print("main: \(main), Date/Time: \(dtTxt), Temperature: \(temp - 273.15) ℃")
                                             let tempChange = temp - 273.15
-                                            print("Date/Time: \(dtTxt), Temperature: \(tempChange) ℃")
+//                                            print("Date/Time: \(dtTxt), Temperature: \(tempChange) ℃")
                                             WeatherViewModel.tempOfChart.append(tempChange)
                                             WeatherViewModel.timeOfChart.append(dtTxt)
+                                            
+                                            // 공백 기준으로 문자열 자르기 ex) 2023-10-06 12:00:00 -> 2023-10-06, 12:00:00
+                                            let parts = dtTxt.split(separator: " ")
+                                            let day = String(parts[0])
+                                            let time = String(parts[1])
+                                            
+                                            if !WeatherViewModel.fiveDays.contains(day) {
+                                                WeatherViewModel.fiveDays.append(day)
+                                                // WeatherViewModel.fiveDaysTemp에 온도를 저장하는 빈 FivedayTemp 구조체 형식을 추가해준다.
+                                                WeatherViewModel.fiveDaysTemp.append(FivedayTemp(time: [], temp: []))
+                                            }
+                                            
+                                            // 입력받은 일의 수를 파악하여(fiveDays) 시간대별 온도를 저장할 배열(fiveDaysTemp)에 index값으로 사용함.
+                                            if !WeatherViewModel.fiveDaysTemp[WeatherViewModel.fiveDays.count-1].time.contains(time) {
+                                                WeatherViewModel.fiveDaysTemp[WeatherViewModel.fiveDays.count-1].time.append(time)
+                                                WeatherViewModel.fiveDaysTemp[WeatherViewModel.fiveDays.count-1].temp.append(tempChange)
+                                            }
+//                                            print("저장 상태 : \(WeatherViewModel.fiveDaysTemp)")
                                         }
                                     }
+                                    
+                                    for i in 0..<WeatherViewModel.fiveDays.count {
+                                        print("i: \(i)")
+                                        print("WeatherViewModel.fiveDays[i]: \(WeatherViewModel.fiveDays[i])")
+                                        print("WeatherViewModel.fiveDaysTemp[i]: \(WeatherViewModel.fiveDaysTemp[i])")
+                                    }
+                                    
                                     // API 호출이 완료된 후 화면 업데이트
                                     DispatchQueue.main.async {
-                                        // 여기에서 화면 업데이트 작업 수행
-//                                        self.updateUI()
+                                        // API 호출이 끝나고 실행
+                                        // 임시로 Indicator Test
+//                                        self.activityIndicator.stopAnimating()
+//                                        self.activityIndicator.removeFromSuperview()
+                                        self.configureDataSource()
+                                        self.applySnapshot()
                                     }
                                 }
                             }

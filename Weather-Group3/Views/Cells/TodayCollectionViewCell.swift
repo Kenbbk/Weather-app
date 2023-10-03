@@ -76,9 +76,10 @@ class TodayCollectionViewCell: UICollectionViewCell {
         ])
     }
     
-    func configure(with time: String, icon: String, temp: String) {
+    func configure(with time: String, icon: String, temp: Double) {
         timeLabel.text = time
         iconLabel.text = icon
-        tempLabel.text = temp
+        let formattedTemp = String(format: "%.1f", temp)
+        tempLabel.text = String(formattedTemp)
     }
 }

@@ -14,6 +14,14 @@ class WeatherViewModel {
     // 시간대별 온도를 저장할 곳
     static var tempOfChart: [Double] = []
     static var timeOfChart: [String] = []
+    
+    static var fiveDays: [String] = []
+    static var fiveDaysTemp: [FivedayTemp] = []
+}
+
+struct FivedayTemp {
+    var time: [String]
+    var temp: [Double]
 }
 
 struct DayDataModel {

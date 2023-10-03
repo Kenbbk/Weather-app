@@ -141,7 +141,14 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
     private func setLineChart() {
         print("test: WeatherViewModel().tempOfChart \(WeatherViewModel.tempOfChart)")
         
-        tempGraphView.setLineChart(temp: WeatherViewModel.tempOfChart, time: WeatherViewModel.timeOfChart)
+        // 5일간의 기온 확인.
+        for i in 0..<WeatherViewModel.fiveDays.count {
+            print("i: \(i)")
+            print("WeatherViewModel.fiveDays[i]: \(WeatherViewModel.fiveDays[i])")
+            print("WeatherViewModel.fiveDaysTemp[i]: \(WeatherViewModel.fiveDaysTemp[i])")
+        }
+        
+        tempGraphView.setLineChart(temp: WeatherViewModel.fiveDaysTemp[0].temp, time: WeatherViewModel.fiveDaysTemp[0].time)
     }
     
     private func setForecast() {
