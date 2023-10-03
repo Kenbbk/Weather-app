@@ -86,10 +86,12 @@ class DayCollectionViewCell: UICollectionViewCell {
         ])
     }
     
-    func configure(with time: String, icon: String, lowTemp: String, highTemp: String) {
+    func configure(with time: String, icon: String, lowTemp: Double, highTemp: Double) {
         timeLabel.text = time
         iconLabel.text = icon
-        lowTempLabel.text = lowTemp
-        highTempLabel.text = highTemp
+        let formattedLowTemp = String(format: "%.1f", lowTemp)
+        lowTempLabel.text = formattedLowTemp
+        let formattedHighTemp = String(format: "%.1f", highTemp)
+        highTempLabel.text = formattedHighTemp
     }
 }

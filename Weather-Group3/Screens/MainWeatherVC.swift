@@ -96,7 +96,6 @@ class MainWeatherVC: UIViewController {
                 let daysWeather = WeatherViewModel.fiveDaysTemp[0]
                 print("indexPath.row: \(indexPath.row)")
                 if indexPath.row < daysWeather.time.count {
-                    print("daysWeather.time[indexPath.row]: \(daysWeather.time[indexPath.row])")
                     cell.configure(with: daysWeather.time[indexPath.row], icon: "icon", temp: daysWeather.temp[indexPath.row])
                 } else {
                     cell.configure(with: "빈칸", icon: "icon", temp: 0)
@@ -106,7 +105,16 @@ class MainWeatherVC: UIViewController {
                 return cell
             } else if indexPath.section == 1 {
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DayCollectionViewCell.identifier, for: indexPath) as! DayCollectionViewCell
-                cell.configure(with: "time", icon: "icon", lowTemp: "lowTemp", highTemp: "highTemp")
+                // 5일간의 날씨 표시
+                // test 231003
+                print("indexPath.row: \(indexPath.row)")
+                if indexPath.row < WeatherViewModel.fiveDays.count {
+                    let day = WeatherViewModel.fiveDays[indexPath.row]
+                    let daysTemp = WeatherViewModel.fiveDaysTemp[indexPath.row].temp
+                    cell.configure(with: day, icon: "icon", lowTemp: Double(daysTemp.min()!) ?? 0, highTemp: Double(daysTemp.max()!) ?? 0)
+                } else {
+                    cell.configure(with: "time", icon: "icon", lowTemp: 0, highTemp: 10)
+                }
                 
                 return cell
             }
