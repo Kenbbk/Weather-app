@@ -37,8 +37,9 @@ class MainWeatherVC: UIViewController {
     //    var heightFloat: CGFloat {
     //        print(heightConstraint.constant)
     //        return heightConstraint.constant
-    //
+    
     //    }
+    ////
     var sections: [Section] = [.first, .second, .third, .fourth]
     
     let mainHeaderView: MainHeaderView = .init(frame: .zero)
@@ -56,15 +57,20 @@ class MainWeatherVC: UIViewController {
     
     var dataSource: UICollectionViewDiffableDataSource<Section, Int>!
     
+    var header: NSCollectionLayoutBoundarySupplementaryItem!
+    
     //MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        header = supplementaryHeaderItem()
+        view.backgroundColor = UIColor(patternImage: UIImage(named: "background2")!)
         configureUI()
         configureDataSource()
         applySnapshot()
         
         collectionView.delegate = self
+        print("DD")
         
     }
     
@@ -74,24 +80,42 @@ class MainWeatherVC: UIViewController {
     
     //MARK: - Actions
     
+    @objc func collectionTapped() {
+        print("CollectionTapped")
+    }
+    
     //MARK: - Helpers
     
     private func configureDataSource() {
         dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-            cell.backgroundColor = .yellow
-            return cell
+            if indexPath.section == 0 {
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CustomCell.identifier, for: indexPath)
+                return cell
+            } else if indexPath.section == 1 {
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SecondCell.identifier, for: indexPath) as! SecondCell
+                let tuple = TempRangeService().getTempRange(min: 10, max: 30, currentMin: 10, currentMax: 30)
+                
+                cell.colorViews(min: tuple.0, max: tuple.1)
+
+                cell.colorBar.colors = ColorService().getColors(min: -7, max: 21)
+                
+                return cell
+            } else {
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+                cell.backgroundColor = .yellow.withAlphaComponent(0.1)
+                return cell
+            }
+            
         })
         
         dataSource.supplementaryViewProvider = { (collectionView, kind, indexPath) in
             
-                guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: CellHeaderView.identifier, for: indexPath) as? CellHeaderView else {
-                    fatalError("Could not dequeue sectionHeader: \(CellHeaderView.identifier)")
-                }
-                return sectionHeader
-            
-            
-           
+            guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: CellHeaderView.identifier, for: indexPath) as? CellHeaderView else {
+                fatalError("Could not dequeue sectionHeader: \(CellHeaderView.identifier)")
+            }
+            sectionHeader.delegate = self
+            sectionHeader.sectionIndex = indexPath.section
+            return sectionHeader
         }
     }
     
@@ -102,21 +126,24 @@ class MainWeatherVC: UIViewController {
         snapshot.appendItems([8,9,10,11,12,13,14,15], toSection: .second)
         snapshot.appendItems([16], toSection: .third)
         snapshot.appendItems([17,18,19,20,21,22,23,24], toSection: .fourth)
+        
         dataSource.apply(snapshot)
     }
     
-    private func supplementaryHeaderItem() -> NSCollectionLayoutBoundarySupplementaryItem    {
+    private func supplementaryHeaderItem() -> NSCollectionLayoutBoundarySupplementaryItem {
         let header = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(20)), elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
-        header.pinToVisibleBounds = true
+        //        header.pinToVisibleBounds = true
+        
         return header
     }
     
+    // uuid hash uidd red  -> 데이터소스가 변하면 cell이 tableview reload, uuid, color hash
+    // model: name: Woojun, age: 20
     //MARK: - UI
     
     private func configureUI() {
-        configureCollectionView()
         configureMainHeaderView()
-        
+        configureCollectionView()
     }
     
     func configureMainHeaderView() {
@@ -130,16 +157,15 @@ class MainWeatherVC: UIViewController {
             mainHeaderView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             heightConstraint
         ])
-        
     }
     
     func configureCollectionView() {
         view.addSubview(collectionView)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            collectionView.topAnchor.constraint(equalTo: mainHeaderView.bottomAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant:  -15),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
@@ -153,27 +179,45 @@ class MainWeatherVC: UIViewController {
             case .first:
                 
                 let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1)))
-                //                item.contentInsets = .init(top: 1, leading: 5, bottom: 1, trailing: 5)
-                let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .absolute(70), heightDimension: .absolute(70)), subitems: [item])
+                //                                item.contentInsets = .init(top: 1, leading: 5, bottom: 10, trailing: 5)
+                
+                let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .absolute(70), heightDimension: .absolute(50)), subitems: [item])
+                
                 
                 let section = NSCollectionLayoutSection(group: group)
-                section.contentInsets = .init(top: 0, leading: 15, bottom: 0, trailing: 0)
+                //                section.contentInsets = .init(top: 0, leading: 15, bottom: 0, trailing: 15)
                 section.orthogonalScrollingBehavior = .continuous
-                section.interGroupSpacing = 10
-                section.boundarySupplementaryItems = [supplementaryHeaderItem()]
+                //                section.interGroupSpacing = 10
+                //                let header = supplementaryHeaderItem()
                 
+                section.boundarySupplementaryItems = [header]
+                section.contentInsets = .init(top: 0, leading: 0, bottom: 10, trailing: 0)
+                
+                
+                let backgroundItem = NSCollectionLayoutDecorationItem.background(elementKind: BackgroundReusableView.identifier)
+                
+                
+                
+                section.decorationItems = [backgroundItem]
                 return section
                 
             case .second:
+                
                 let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1)))
-                item.contentInsets = .init(top: 3, leading: 3, bottom: 3, trailing: 3)
+                //                item.contentInsets = .init(top: 3, leading: 3, bottom: 3, trailing: 3)
                 
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .absolute(50)), repeatingSubitem: item, count: 1)
-                group.contentInsets = .init(top: 2.5, leading: 0, bottom: 2.5, trailing: 0)
+                //                group.contentInsets = .init(top: 0, leading: 0, bottom: 5, trailing: 0)
                 
                 let section = NSCollectionLayoutSection(group: group)
-                section.contentInsets = .init(top: 0, leading: sectionPadding, bottom: sectionTopPadding, trailing: sectionPadding)
+                
                 section.boundarySupplementaryItems = [supplementaryHeaderItem()]
+                
+                let backgroundItem = NSCollectionLayoutDecorationItem.background(elementKind: BackgroundReusableView.identifier)
+                
+                
+                
+                section.decorationItems = [backgroundItem]
                 
                 return section
                 
@@ -186,8 +230,8 @@ class MainWeatherVC: UIViewController {
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(0.4)), repeatingSubitem: item, count: 1)
                 
                 let section = NSCollectionLayoutSection(group: group)
-                //                section.decorationItems = [UIView()]
-                section.contentInsets = .init(top: 0, leading: sectionPadding, bottom: sectionTopPadding, trailing: sectionPadding)
+                
+                
                 
                 section.boundarySupplementaryItems = [supplementaryHeaderItem()]
                 
@@ -206,18 +250,22 @@ class MainWeatherVC: UIViewController {
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(0.5), heightDimension: .absolute(180)), repeatingSubitem: item, count: 2)
                 group.contentInsets = .init(top: 0, leading: 0, bottom: 5, trailing: 0)
                 let section = NSCollectionLayoutSection(group: group)
-                section.contentInsets = .init(top: 0, leading: 7.5, bottom: sectionTopPadding, trailing: 7.5)
-                //                section.boundarySupplementaryItems = [supplementaryHeaderItem()]
-                //                section.orthogonalScrollingBehavior = .groupPaging
+                
+                let backgroundItem = NSCollectionLayoutDecorationItem.background(elementKind: BackgroundReusableView.identifier)
+                
+                backgroundItem.contentInsets = section.contentInsets
+                
+                section.decorationItems = [backgroundItem]
                 return section
             }
             
             
         }
+        
         layout.register(BackgroundReusableView.self,
                         forDecorationViewOfKind: BackgroundReusableView.identifier)
         let config = UICollectionViewCompositionalLayoutConfiguration()
-        // config.interSectionSpacing = 20
+        config.interSectionSpacing = 10
         
         layout.configuration = config
         
@@ -230,46 +278,49 @@ class MainWeatherVC: UIViewController {
 
 extension MainWeatherVC: UIScrollViewDelegate {
     
-//    func updateOffset(offsetY: CGFloat) {
-//
-//
-//        guard offsetY < -75 else { return }
-//
-//        let diff = lastPositionY - offsetY
-//
-//        self.currentOffsetY = currentOffsetY + diff
-//        print(lastPositionY, offsetY, diff)
-//
-//        heightConstraint.constant = currentOffsetY
-//
-//        lastPositionY = offsetY
-//
-//    }
-    
-    
-    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
-        guard scrollView.contentOffset.y <= 0 else { return }
-      
-        if scrollView.contentOffset.y > -260 {
-            heightConstraint.constant = max(abs(scrollView.contentOffset.y), 105)
+        var a = heightConstraint.constant - scrollView.contentOffset.y
+        a = max(115, a)
+        a = min(a, 260)
+        // 하이트 컨스턴트를 만들고 그값을 업데이트해준뒤
+        //        heightFloat = a
+        heightConstraint.constant = a // <- 여기에다가 넣어준다
+        // 넣어주고 나서 넣어준값이 변경될때마다 City label Constraint를 업데이트 시켜준다
+        mainHeaderView.topConstraintConstant = (7 / 29) * heightConstraint.constant - 30.3448
+        if heightConstraint.constant > 115 {
+            if scrollView.contentOffset.y <= 0 {
+                
+            } else {
+                scrollView.contentOffset.y = 0
+            }
             
-            mainHeaderView.topConstraint.constant = max((6 / 31) * abs(scrollView.contentOffset.y) - (630 / 31), -5)
-            
-            print(mainHeaderView.topConstraint.constant)
-
-        } else {
-            heightConstraint.constant = 260
-            mainHeaderView.topConstraint.constant = 30
         }
         
-        
     }
-    
-  
 }
+
+
 
 extension MainWeatherVC: UICollectionViewDelegate {
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print(indexPath.section)
+        header = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(200)), elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
+        //            header.pinToVisibleBounds = true
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        
+    }
 }
+
+extension MainWeatherVC: CellHeaderViewDelegate {
+    func cellHeaderViewTapped(sectionIndex: Int) {
+        print(sectionIndex)
+    }
+    
+    
+}
+
+

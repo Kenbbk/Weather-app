@@ -7,9 +7,17 @@
 
 import UIKit
 
+protocol CellHeaderViewDelegate: AnyObject {
+    func cellHeaderViewTapped(sectionIndex: Int)
+}
+
 class CellHeaderView: UICollectionReusableView {
     
     static let identifier = "CellHeaderView"
+    
+    var delegate: CellHeaderViewDelegate?
+    
+    var sectionIndex: Int?
     
     private let iconImageView: UIImageView = {
        let iv = UIImageView()
@@ -27,7 +35,9 @@ class CellHeaderView: UICollectionReusableView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
         configureUI()
+        addGesture()
         
     }
     
@@ -39,6 +49,14 @@ class CellHeaderView: UICollectionReusableView {
         addSubviews()
         configureIconImageView()
         configureLabel()
+    }
+    
+    @objc func tapped() {
+        delegate?.cellHeaderViewTapped(sectionIndex: sectionIndex!)
+    }
+    
+    private func addGesture() {
+        self.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapped)))
     }
     
     private func addSubviews() {

@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D667CE252AC5C14300316F24 /* CustomCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D667CE242AC5C14300316F24 /* CustomCell.swift */; };
+		D667CE272AC6DF6300316F24 /* SecondCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D667CE262AC6DF6300316F24 /* SecondCell.swift */; };
+		D667CE292AC6E93E00316F24 /* ColorBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D667CE282AC6E93E00316F24 /* ColorBar.swift */; };
+		D667CE2B2AC84DC100316F24 /* TempRangeSerivce.swift in Sources */ = {isa = PBXBuildFile; fileRef = D667CE2A2AC84DC100316F24 /* TempRangeSerivce.swift */; };
+		D66A9CE32ACC27B500A04460 /* SlopeCalculatorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D66A9CE22ACC27B500A04460 /* SlopeCalculatorService.swift */; };
+		D66A9CE52ACC310600A04460 /* ColorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D66A9CE42ACC310600A04460 /* ColorService.swift */; };
 		D6B1E3752AC404E00082934A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6B1E3742AC404E00082934A /* AppDelegate.swift */; };
 		D6B1E3772AC404E00082934A /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6B1E3762AC404E00082934A /* SceneDelegate.swift */; };
 		D6B1E37E2AC404E20082934A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D6B1E37D2AC404E20082934A /* Assets.xcassets */; };
@@ -18,6 +24,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D667CE242AC5C14300316F24 /* CustomCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCell.swift; sourceTree = "<group>"; };
+		D667CE262AC6DF6300316F24 /* SecondCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondCell.swift; sourceTree = "<group>"; };
+		D667CE282AC6E93E00316F24 /* ColorBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorBar.swift; sourceTree = "<group>"; };
+		D667CE2A2AC84DC100316F24 /* TempRangeSerivce.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TempRangeSerivce.swift; sourceTree = "<group>"; };
+		D66A9CE22ACC27B500A04460 /* SlopeCalculatorService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlopeCalculatorService.swift; sourceTree = "<group>"; };
+		D66A9CE42ACC310600A04460 /* ColorService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorService.swift; sourceTree = "<group>"; };
 		D6B1E3712AC404E00082934A /* Weather-Group3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Weather-Group3.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D6B1E3742AC404E00082934A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D6B1E3762AC404E00082934A /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -68,6 +80,12 @@
 				D6B1E38C2AC409AF0082934A /* MainHeaderView.swift */,
 				D6B1E38E2AC409D60082934A /* CellHeaderView.swift */,
 				D6B1E3902AC40A040082934A /* BackgroundReusableView.swift */,
+				D667CE242AC5C14300316F24 /* CustomCell.swift */,
+				D667CE262AC6DF6300316F24 /* SecondCell.swift */,
+				D667CE282AC6E93E00316F24 /* ColorBar.swift */,
+				D667CE2A2AC84DC100316F24 /* TempRangeSerivce.swift */,
+				D66A9CE22ACC27B500A04460 /* SlopeCalculatorService.swift */,
+				D66A9CE42ACC310600A04460 /* ColorService.swift */,
 			);
 			path = "Weather-Group3";
 			sourceTree = "<group>";
@@ -161,10 +179,16 @@
 			files = (
 				D6B1E38D2AC409AF0082934A /* MainHeaderView.swift in Sources */,
 				D6B1E3912AC40A040082934A /* BackgroundReusableView.swift in Sources */,
+				D66A9CE52ACC310600A04460 /* ColorService.swift in Sources */,
 				D6B1E38F2AC409D60082934A /* CellHeaderView.swift in Sources */,
+				D66A9CE32ACC27B500A04460 /* SlopeCalculatorService.swift in Sources */,
+				D667CE2B2AC84DC100316F24 /* TempRangeSerivce.swift in Sources */,
 				D6B1E38B2AC4057F0082934A /* MainWeatherVC.swift in Sources */,
 				D6B1E3752AC404E00082934A /* AppDelegate.swift in Sources */,
+				D667CE292AC6E93E00316F24 /* ColorBar.swift in Sources */,
+				D667CE252AC5C14300316F24 /* CustomCell.swift in Sources */,
 				D6B1E3772AC404E00082934A /* SceneDelegate.swift in Sources */,
+				D667CE272AC6DF6300316F24 /* SecondCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
