@@ -84,7 +84,7 @@ class MainHeaderView: UIView {
     
     private func configureUI() {
         clipsToBounds = true
-        backgroundColor = .white
+        
         addSubViews()
         configureCityLabel()
         configureTemperatureLabel()
