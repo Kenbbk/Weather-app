@@ -99,7 +99,11 @@ class MainWeatherVC: UIViewController {
                 return cell
             } else if indexPath.section == 1 {
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SecondCell.identifier, for: indexPath) as! SecondCell
-                cell.
+                let tuple = TempRangeService().getTempRange(min: 10, max: 30, currentMin: 10, currentMax: 30)
+                
+                cell.colorViews(min: tuple.0, max: tuple.1)
+
+                cell.colorBar.colors = ColorService().getColors(min: -8, max: 8)
                 return cell
             }
 //            else if indexPath.section == 1 {
@@ -132,11 +136,7 @@ class MainWeatherVC: UIViewController {
 
             return cell
         })
-//        dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
-//            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-//            cell.backgroundColor = .yellow
-//            return cell
-//        })
+
         
         dataSource.supplementaryViewProvider = { (collectionView, kind, indexPath) in
             
@@ -162,13 +162,10 @@ class MainWeatherVC: UIViewController {
     
     private func supplementaryHeaderItem() -> NSCollectionLayoutBoundarySupplementaryItem {
         let header = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(20)), elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
-        //        header.pinToVisibleBounds = true
         
         return header
     }
     
-    // uuid hash uidd red  -> 데이터소스가 변하면 cell이 tableview reload, uuid, color hash
-    // model: name: Woojun, age: 20
     //MARK: - UI
     
     private func configureUI() {
@@ -211,7 +208,7 @@ class MainWeatherVC: UIViewController {
                 let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1)))
                 //                                item.contentInsets = .init(top: 1, leading: 5, bottom: 10, trailing: 5)
                 
-                let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .absolute(70), heightDimension: .absolute(50)), subitems: [item])
+                let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .absolute(70), heightDimension: .estimated(95)), subitems: [item])
                 
                 
                 let section = NSCollectionLayoutSection(group: group)

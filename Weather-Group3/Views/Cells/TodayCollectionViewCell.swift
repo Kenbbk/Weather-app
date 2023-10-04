@@ -25,7 +25,7 @@ class TodayCollectionViewCell: UICollectionViewCell {
     
     lazy var iconImageView: UIImageView = {
         let imageView = UIImageView()
-        
+        imageView.contentMode = .scaleAspectFit
         return imageView
     }()
     

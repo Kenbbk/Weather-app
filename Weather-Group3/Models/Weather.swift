@@ -9,7 +9,7 @@ import Foundation
 
 // Decodable: A type that can decode itself from an external representation.
 // JSON 데이터 디코딩
-struct dayWeather: Decodable {
+struct DayWeather: Decodable {
     let weather: [Weather]
     let main: Main
     let name: String
