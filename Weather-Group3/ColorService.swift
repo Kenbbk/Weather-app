@@ -69,5 +69,6 @@ struct ColorService {
             0
             
         }
+        return 0
     }
 }

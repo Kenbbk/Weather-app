@@ -38,6 +38,8 @@ class DayCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
+    let colorBar = ColorBar()
+    
     lazy var highTempLabel: UILabel = {
         let label = UILabel()
 
@@ -49,7 +51,7 @@ class DayCollectionViewCell: UICollectionViewCell {
     // progress bar가 들어가야할 부분
     
     lazy var weatherStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [timeLabel, iconImageView, lowTempLabel, highTempLabel])
+        let stackView = UIStackView(arrangedSubviews: [timeLabel, iconImageView, lowTempLabel, colorBar, highTempLabel])
         stackView.spacing = stackViewSpacing
         stackView.axis = .horizontal
         stackView.distribution = .fillProportionally
@@ -83,6 +85,10 @@ class DayCollectionViewCell: UICollectionViewCell {
             weatherStackView.leadingAnchor.constraint(equalTo: leadingAnchor),
             weatherStackView.trailingAnchor.constraint(equalTo: trailingAnchor),
         ])
+    }
+    
+    func colorViews(min: Double, max: Double) {
+        colorBar.setConstraint(constraint: (min, max))
     }
     
     func configure(with time: String, iconCode: String, lowTemp: Double, highTemp: Double) {

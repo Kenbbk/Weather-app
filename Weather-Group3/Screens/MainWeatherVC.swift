@@ -102,16 +102,15 @@ class MainWeatherVC: UIViewController {
                     let day = WeatherViewModel.fiveDays[indexPath.row]
                     let daysIcon = WeatherViewModel.fiveDaysTemp[indexPath.row].icon
                     let daysTemp = WeatherViewModel.fiveDaysTemp[indexPath.row].temp
-                    cell.configure(with: day, iconCode: daysIcon[0], lowTemp: Double(daysTemp.min()!) , highTemp: Double(daysTemp.max()!) )
+                    cell.configure(with: day, iconCode: daysIcon[0], lowTemp: Double(daysTemp.min()!) , highTemp: Double(daysTemp.max()!))
+                    
+                    let tuple = TempRangeService().getTempRange(min: 10, max: 30, currentMin: Double(daysTemp.min()!), currentMax: Double(daysTemp.max()!))
+                    cell.colorViews(min: tuple.0, max: tuple.1)
+                    cell.colorBar.colors = ColorService().getColors(min: -7, max: 21)
+                    
                 } else {
                     cell.configure(with: "time", iconCode: "01d", lowTemp: 0, highTemp: 10)
                 }
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SecondCell.identifier, for: indexPath) as! SecondCell
-                let tuple = TempRangeService().getTempRange(min: 10, max: 30, currentMin: 10, currentMax: 30)
-                
-                cell.colorViews(min: tuple.0, max: tuple.1)
-
-                cell.colorBar.colors = ColorService().getColors(min: -7, max: 21)
                 return cell
             }
 //            else if indexPath.section == 1 {
