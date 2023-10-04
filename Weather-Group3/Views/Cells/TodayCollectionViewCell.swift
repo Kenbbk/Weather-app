@@ -23,12 +23,10 @@ class TodayCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    lazy var iconLabel: UILabel = {
-        let label = UILabel()
+    lazy var iconImageView: UIImageView = {
+        let imageView = UIImageView()
         
-        label.font = UIFont.systemFont(ofSize: labelSize)
-        
-        return label
+        return imageView
     }()
     
     lazy var tempLabel: UILabel = {
@@ -40,11 +38,11 @@ class TodayCollectionViewCell: UICollectionViewCell {
     }()
     
     lazy var weatherStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [timeLabel, iconLabel, tempLabel])
+        let stackView = UIStackView(arrangedSubviews: [timeLabel, iconImageView, tempLabel])
         stackView.spacing = stackViewSpacing
         stackView.axis = .vertical
-        stackView.distribution = .fillEqually
-        stackView.alignment = .fill
+        stackView.distribution = .fillProportionally
+        stackView.alignment = .center
         
         stackView.translatesAutoresizingMaskIntoConstraints = false
         return stackView
@@ -76,10 +74,40 @@ class TodayCollectionViewCell: UICollectionViewCell {
         ])
     }
     
-    func configure(with time: String, icon: String, temp: Double) {
+    func configure(with time: String, iconCode: String, temp: Double) {
         timeLabel.text = time
-        iconLabel.text = icon
+        
+        // 날씨 정보에서 icon 코드 추출
+        let code = iconCode
+        displayWeatherIcon(iconCode: code)
+        
         let formattedTemp = String(format: "%.1f", temp)
         tempLabel.text = String(formattedTemp)
+    }
+    
+    // 아이콘 이미지를 다운로드하고 표시하는 함수
+    func displayWeatherIcon(iconCode: String) {
+        // 아이콘 이미지 URL 생성
+        let iconURLString = "https://openweathermap.org/img/wn/\(iconCode).png"
+        guard let iconURL = URL(string: iconURLString) else {
+            return
+        }
+        
+        // URLSession을 사용하여 이미지 다운로드
+        let task = URLSession.shared.dataTask(with: iconURL) { (data, _, error) in
+            if let error = error {
+                print("Error downloading image: \(error.localizedDescription)")
+                return
+            }
+            
+            if let data = data, let image = UIImage(data: data) {
+                // 다운로드한 이미지를 메인 스레드에서 표시
+                DispatchQueue.main.async {
+                    self.iconImageView.image = image // image 표시!
+                }
+            }
+        }
+        
+        task.resume()
     }
 }

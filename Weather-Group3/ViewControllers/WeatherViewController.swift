@@ -10,7 +10,6 @@ import UIKit
 import CoreLocation
 
 class WeatherViewController: UIViewController, CLLocationManagerDelegate {
-    
     // MARK: View 목록
     lazy var weatherView: WeatherTitleView = {
         let view = WeatherTitleView()
@@ -33,8 +32,8 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         return view
     }()
     
-    
-    // 받아온 데이터를 저장할 프로퍼티
+    // MARK: - Properties
+    var section: Int?
     var weather: Weather?
     var main: Main?
     var name: String?
@@ -43,7 +42,7 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        print("section: \(section)")
         configure()
     }
     

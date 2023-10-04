@@ -53,7 +53,7 @@ class DayCollectionViewCell: UICollectionViewCell {
         let stackView = UIStackView(arrangedSubviews: [timeLabel, iconLabel, lowTempLabel, highTempLabel])
         stackView.spacing = stackViewSpacing
         stackView.axis = .horizontal
-        stackView.distribution = .fillEqually
+        stackView.distribution = .fillProportionally
         stackView.alignment = .fill
         
         stackView.translatesAutoresizingMaskIntoConstraints = false

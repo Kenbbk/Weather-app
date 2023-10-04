@@ -21,6 +21,7 @@ class WeatherViewModel {
 
 struct FivedayTemp {
     var time: [String]
+    var icon: [String]
     var temp: [Double]
 }
 

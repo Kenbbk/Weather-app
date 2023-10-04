@@ -67,14 +67,14 @@ class MainWeatherVC: UIViewController {
         
         // test 231003
         // Indicator 임시로 테스트
-//        activityIndicator.center = view.center
-//        view.addSubview(activityIndicator)
-//        activityIndicator.startAnimating()
+        //        activityIndicator.center = view.center
+        //        view.addSubview(activityIndicator)
+        //        activityIndicator.startAnimating()
         
         view.backgroundColor = .white
         configureUI()
-//        configureDataSource()
-//        applySnapshot()
+        //        configureDataSource()
+        //        applySnapshot()
         
         collectionView.delegate = self
         
@@ -96,9 +96,9 @@ class MainWeatherVC: UIViewController {
                 let daysWeather = WeatherViewModel.fiveDaysTemp[0]
                 print("indexPath.row: \(indexPath.row)")
                 if indexPath.row < daysWeather.time.count {
-                    cell.configure(with: daysWeather.time[indexPath.row], icon: "icon", temp: daysWeather.temp[indexPath.row])
+                    cell.configure(with: daysWeather.time[indexPath.row], iconCode: "01d", temp: daysWeather.temp[indexPath.row])
                 } else {
-                    cell.configure(with: "빈칸", icon: "icon", temp: 0)
+                    cell.configure(with: "빈칸", iconCode: "01d", temp: 0)
                 }
                 
                 
@@ -319,6 +319,16 @@ extension MainWeatherVC: UICollectionViewDelegate {
         if indexPath.section == 0 {
             let weatherViewController = WeatherViewController()
             
+            print("indexPath.section: \(indexPath.section)")
+            weatherViewController.section = indexPath.section
+            
+            present(weatherViewController, animated: true, completion: nil)
+        } else if indexPath.section == 1 {
+            let weatherViewController = WeatherViewController()
+            
+            print("indexPath.section: \(indexPath.section)")
+            weatherViewController.section = indexPath.section
+            
             present(weatherViewController, animated: true, completion: nil)
         }
     }
@@ -336,8 +346,7 @@ extension MainWeatherVC: CLLocationManagerDelegate {
         // 위치 사용을 허용하면 현재 위치 정보를 가져옴
         if CLLocationManager.locationServicesEnabled() {
             locationManager.startUpdatingLocation()
-        }
-        else {
+        } else {
             print("위치 서비스 허용 off")
         }
     }
@@ -370,15 +379,16 @@ extension MainWeatherVC: CLLocationManagerDelegate {
                                     // 같은 날짜끼리 묶기
                                     var dayParts: [String] = []
                                     
-                                    
                                     for forecast in list {
                                         if let dtTxt = forecast["dt_txt"] as? String,
                                            let main = forecast["main"] as? [String: Any],
-                                           let temp = main["temp"] as? Double {
+                                           let temp = main["temp"] as? Double,
+                                           let weather = forecast["weather"] as? [String: Any],
+                                           let icon = weather["icon"] as? String {
                                             // 날짜 및 시간대별 온도 출력
-                                            //                                            print("main: \(main), Date/Time: \(dtTxt), Temperature: \(temp - 273.15) ℃")
+                                            // print("main: \(main), Date/Time: \(dtTxt), Temperature: \(temp - 273.15) ℃")
                                             let tempChange = temp - 273.15
-//                                            print("Date/Time: \(dtTxt), Temperature: \(tempChange) ℃")
+                                            // print("Date/Time: \(dtTxt), Temperature: \(tempChange) ℃")
                                             WeatherViewModel.tempOfChart.append(tempChange)
                                             WeatherViewModel.timeOfChart.append(dtTxt)
                                             
@@ -390,7 +400,7 @@ extension MainWeatherVC: CLLocationManagerDelegate {
                                             if !WeatherViewModel.fiveDays.contains(day) {
                                                 WeatherViewModel.fiveDays.append(day)
                                                 // WeatherViewModel.fiveDaysTemp에 온도를 저장하는 빈 FivedayTemp 구조체 형식을 추가해준다.
-                                                WeatherViewModel.fiveDaysTemp.append(FivedayTemp(time: [], temp: []))
+                                                WeatherViewModel.fiveDaysTemp.append(FivedayTemp(time: [], icon: [], temp: []))
                                             }
                                             
                                             // 입력받은 일의 수를 파악하여(fiveDays) 시간대별 온도를 저장할 배열(fiveDaysTemp)에 index값으로 사용함.
@@ -398,7 +408,7 @@ extension MainWeatherVC: CLLocationManagerDelegate {
                                                 WeatherViewModel.fiveDaysTemp[WeatherViewModel.fiveDays.count-1].time.append(time)
                                                 WeatherViewModel.fiveDaysTemp[WeatherViewModel.fiveDays.count-1].temp.append(tempChange)
                                             }
-//                                            print("저장 상태 : \(WeatherViewModel.fiveDaysTemp)")
+                                            // print("저장 상태 : \(WeatherViewModel.fiveDaysTemp)")
                                         }
                                     }
                                     
@@ -412,8 +422,8 @@ extension MainWeatherVC: CLLocationManagerDelegate {
                                     DispatchQueue.main.async {
                                         // API 호출이 끝나고 실행
                                         // 임시로 Indicator Test
-//                                        self.activityIndicator.stopAnimating()
-//                                        self.activityIndicator.removeFromSuperview()
+                                        // self.activityIndicator.stopAnimating()
+                                        // self.activityIndicator.removeFromSuperview()
                                         self.configureDataSource()
                                         self.applySnapshot()
                                     }
