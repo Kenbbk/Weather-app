@@ -65,6 +65,8 @@ class MainWeatherVC: UIViewController {
         applySnapshot()
         
         collectionView.delegate = self
+        // Test(sr) - MapCell 등록
+        collectionView.register(MapCell.self, forCellWithReuseIdentifier: "mapCell")
         
     }
     
@@ -77,11 +79,24 @@ class MainWeatherVC: UIViewController {
     //MARK: - Helpers
     
     private func configureDataSource() {
-        dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-            cell.backgroundColor = .yellow
-            return cell
+        // Test(sr) - MapCell 섹션2에 표시
+        dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView, cellProvider: { collectionView, indexPath, _ in
+            if indexPath.section == 2 {
+                if let mapCell = collectionView.dequeueReusableCell(withReuseIdentifier: "mapCell", for: indexPath) as? MapCell {
+                    return mapCell
+                }
+            } else {
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+                cell.backgroundColor = .yellow
+                return cell
+            }
+            return UICollectionViewCell()
         })
+//        dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
+//            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+//            cell.backgroundColor = .yellow
+//            return cell
+//        })
         
         dataSource.supplementaryViewProvider = { (collectionView, kind, indexPath) in
             
@@ -271,5 +286,18 @@ extension MainWeatherVC: UIScrollViewDelegate {
 }
 
 extension MainWeatherVC: UICollectionViewDelegate {
-    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        // Test: WeatherViewController 실행(임의로 isSelected 사용)
+//           if indexPath.section == 0 {
+//               let weatherViewController = WeatherViewController()
+//
+//               present(weatherViewController, animated: true, completion: nil)
+//           }
+        
+        // Test(sr): MapViewController 실행
+        if indexPath.section == 2 {
+            let mapViewController = MapViewController()
+            present(mapViewController, animated: true)
+        }
+    }
 }
