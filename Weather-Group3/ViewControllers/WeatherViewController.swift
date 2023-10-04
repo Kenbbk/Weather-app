@@ -51,6 +51,8 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         setUI()
         setConstraint()
         insertDataSource() // scroll View
+        
+        setDate()
         setTemp()
         setLineChart()
         setForecast()
@@ -88,25 +90,47 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         dateScrollView.dataSource = Days.getDataSource()
     }
     
+    private func setDate() {
+        
+        let dateFormatter = DateFormatter()
+        
+        dateFormatter.dateFormat = "YYYY-mm-dd"
+        var inputDate: Date = Date()
+        if section == 0 {
+            inputDate = dateFormatter.date(from: WeatherViewModel.fiveDays[0])!
+        } else if section == 1 {
+            inputDate = dateFormatter.date(from: WeatherViewModel.fiveDays[row!])!
+        }
+        
+        dateFormatter.dateFormat = "YYYY년 mm월 dd일 EEE요일"
+        
+        let outputDate = dateFormatter.string(from: inputDate)
+        
+        let selectedDate: String = outputDate
+        print("selectedDate : \(selectedDate)")
+        
+        tempGraphView.setDate(date: selectedDate)
+    }
+    
     private func setTemp() {
-        let currentTemp: String = "21"
-        let highTemp: String = "25"
-        let lowTemp: String = "17"
+        
+        let formattedCurrentTemp: String = String(format: "%.1f", WeatherViewModel.fiveDaysTemp[row ?? 0].temp[0])
+        let formattedHighTemp: String = String(format: "%.1f", WeatherViewModel.fiveDaysTemp[row ?? 0].temp.max()!)
+        let formattedLowTemp: String = String(format: "%.1f", WeatherViewModel.fiveDaysTemp[row ?? 0].temp.min()!)
+        
+        let currentTemp: String = formattedCurrentTemp
+        let highTemp: String = formattedHighTemp
+        let lowTemp: String = formattedLowTemp
         
         tempGraphView.setTemp(currentTemp: currentTemp, highTemp: highTemp, lowTemp: lowTemp)
     }
     
     private func setLineChart() {
-        print("test: WeatherViewModel().tempOfChart \(WeatherViewModel.tempOfChart)")
-        
-//        // 5일간의 기온 확인.
-//        for i in 0..<WeatherViewModel.fiveDays.count {
-//            print("i: \(i)")
-//            print("WeatherViewModel.fiveDays[i]: \(WeatherViewModel.fiveDays[i])")
-//            print("WeatherViewModel.fiveDaysTemp[i]: \(WeatherViewModel.fiveDaysTemp[i])")
-//        }
-        
-        tempGraphView.setLineChart(temp: WeatherViewModel.fiveDaysTemp[0].temp, time: WeatherViewModel.fiveDaysTemp[0].time)
+        if section == 0 {
+            tempGraphView.setLineChart(temp: WeatherViewModel.fiveDaysTemp[0].temp, time: WeatherViewModel.fiveDaysTemp[0].time)
+        } else if section == 1 {
+            tempGraphView.setLineChart(temp: WeatherViewModel.fiveDaysTemp[row ?? 0].temp, time: WeatherViewModel.fiveDaysTemp[row ?? 0].time)
+        }
     }
     
     private func setForecast() {
