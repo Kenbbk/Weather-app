@@ -16,11 +16,18 @@ struct DayWeather: Decodable {
 struct List: Decodable {
     let main: Main
     let weather: [Weather]
+    let wind: Wind
     let dt_txt: String
 }
 
 struct Main: Decodable {
     let temp: Double
+}
+
+struct Wind: Decodable {
+    let speed: Double
+    let deg: Double
+    let gust: Double
 }
  
 struct Weather: Decodable {

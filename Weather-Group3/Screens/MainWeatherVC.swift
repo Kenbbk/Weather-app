@@ -384,6 +384,8 @@ extension MainWeatherVC: CLLocationManagerDelegate {
                 case .success(let weatherResponse):
                     DispatchQueue.main.async {
                         for forecast in weatherResponse.list {
+                            print("wind: \(forecast.wind.speed)")
+                            
                             // 날짜와 시간 저장
                             WeatherViewModel.timeOfChart.append(forecast.dt_txt)
                             
