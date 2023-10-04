@@ -106,30 +106,15 @@ class MainWeatherVC: UIViewController {
                     let daysTemp = WeatherViewModel.fiveDaysTemp[indexPath.row].temp
                     cell.configure(with: day, iconCode: daysIcon[0], lowTemp: Double(daysTemp.min()!) , highTemp: Double(daysTemp.max()!))
                     
-                    let tuple = TempRangeService().getTempRange(min: 10, max: 30, currentMin: Double(daysTemp.min()!), currentMax: Double(daysTemp.max()!))
-                    cell.colorViews(min: tuple.0, max: tuple.1)
-                    cell.colorBar.colors = ColorService().getColors(min: -7, max: 21)
+//                    let tuple = TempRangeService().getTempRange(min: 10, max: 30, currentMin: Double(daysTemp.min()!), currentMax: Double(daysTemp.max()!))
+//                    cell.colorViews(min: tuple.0, max: tuple.1)
+//                    cell.colorBar.colors = ColorService().getColors(min: -7, max: 21)
                     
                 } else {
                     cell.configure(with: "time", iconCode: "01d", lowTemp: 0, highTemp: 10)
                 }
                 return cell
             }
-            //            else if indexPath.section == 1 {
-            //                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DayCollectionViewCell.identifier, for: indexPath) as! DayCollectionViewCell
-            //                // 5일간의 날씨 표시
-            //                // test 231003
-            //                print("indexPath.row: \(indexPath.row)")
-            //                if indexPath.row < WeatherViewModel.fiveDays.count {
-            //                    let day = WeatherViewModel.fiveDays[indexPath.row]
-            //                    let daysTemp = WeatherViewModel.fiveDaysTemp[indexPath.row].temp
-            //                    cell.configure(with: day, icon: "icon", lowTemp: Double(daysTemp.min()!) ?? 0, highTemp: Double(daysTemp.max()!) ?? 0)
-            //                } else {
-            //                    cell.configure(with: "time", icon: "icon", lowTemp: 0, highTemp: 10)
-            //                }
-            //
-            //                return cell
-            //            }
             else if indexPath.section == 2 {
                 if let mapCell = collectionView.dequeueReusableCell(withReuseIdentifier: "mapCell", for: indexPath) as? MapCell {
                     return mapCell
@@ -397,7 +382,6 @@ extension MainWeatherVC: CLLocationManagerDelegate {
                 case .success(let weatherResponse):
                     DispatchQueue.main.async {
                         for forecast in weatherResponse.list {
-                            print("wind: \(forecast.wind.speed)")
                             
                             // 날짜와 시간 저장
                             WeatherViewModel.timeOfChart.append(forecast.dt_txt)

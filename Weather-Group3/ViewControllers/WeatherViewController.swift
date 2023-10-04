@@ -89,24 +89,19 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     private func setTemp() {
-        let currentTemp: String = "21"
-        let highTemp: String = "25"
-        let lowTemp: String = "17"
+        let currentTemp: String = String(WeatherViewModel.fiveDaysTemp[row ?? 0].temp[0])
+        let highTemp: String = String(WeatherViewModel.fiveDaysTemp[row ?? 0].temp.max()!)
+        let lowTemp: String = String(WeatherViewModel.fiveDaysTemp[row ?? 0].temp.min()!)
         
         tempGraphView.setTemp(currentTemp: currentTemp, highTemp: highTemp, lowTemp: lowTemp)
     }
     
     private func setLineChart() {
-        print("test: WeatherViewModel().tempOfChart \(WeatherViewModel.tempOfChart)")
-        
-//        // 5일간의 기온 확인.
-//        for i in 0..<WeatherViewModel.fiveDays.count {
-//            print("i: \(i)")
-//            print("WeatherViewModel.fiveDays[i]: \(WeatherViewModel.fiveDays[i])")
-//            print("WeatherViewModel.fiveDaysTemp[i]: \(WeatherViewModel.fiveDaysTemp[i])")
-//        }
-        
-        tempGraphView.setLineChart(temp: WeatherViewModel.fiveDaysTemp[0].temp, time: WeatherViewModel.fiveDaysTemp[0].time)
+        if section == 0 {
+            tempGraphView.setLineChart(temp: WeatherViewModel.fiveDaysTemp[0].temp, time: WeatherViewModel.fiveDaysTemp[0].time)
+        } else if section == 1 {
+            tempGraphView.setLineChart(temp: WeatherViewModel.fiveDaysTemp[row ?? 0].temp, time: WeatherViewModel.fiveDaysTemp[row ?? 0].time)
+        }
     }
     
     private func setForecast() {
