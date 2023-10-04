@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreLocation
 
 enum Section {
     case first
@@ -16,9 +17,8 @@ enum Section {
 
 
 class MainWeatherVC: UIViewController {
-    
-    
     //MARK: - Properties
+    let locationManager = CLLocationManager()
     
     var lastPositionY: CGFloat = 0
     
@@ -48,6 +48,8 @@ class MainWeatherVC: UIViewController {
         view.contentInset = .init(top: 260, left: 0, bottom: 0, right: 0)
         view.register(CellHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: CellHeaderView.identifier)
         
+        view.register(TodayCollectionViewCell.self, forCellWithReuseIdentifier: TodayCollectionViewCell.identifier)
+        view.register(DayCollectionViewCell.self, forCellWithReuseIdentifier: DayCollectionViewCell.identifier)
         view.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
         view.backgroundColor = .white
         
@@ -56,20 +58,29 @@ class MainWeatherVC: UIViewController {
     
     var dataSource: UICollectionViewDiffableDataSource<Section, Int>!
     
+    // test 231003
+    let activityIndicator = UIActivityIndicatorView(style: .large)
+    
     //MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // test 231003
+        // Indicator 임시로 테스트
+        //        activityIndicator.center = view.center
+        //        view.addSubview(activityIndicator)
+        //        activityIndicator.startAnimating()
+        
         view.backgroundColor = .white
         configureUI()
-        configureDataSource()
-        applySnapshot()
+        //        configureDataSource()
+        //        applySnapshot()
         
         collectionView.delegate = self
         
+        // Test: 특정 위치의 날씨정보 얻어오기
+        setLocationManager()
     }
-    
-    
-    
     
     
     //MARK: - Actions
@@ -78,20 +89,52 @@ class MainWeatherVC: UIViewController {
     
     private func configureDataSource() {
         dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-            cell.backgroundColor = .yellow
-            return cell
+            if indexPath.section == 0 {
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TodayCollectionViewCell.identifier, for: indexPath) as! TodayCollectionViewCell
+                // 현재 날짜만 표시
+                // test 231003
+                let daysWeather = WeatherViewModel.fiveDaysTemp[0]
+                print("indexPath.row: \(indexPath.row)")
+                if indexPath.row < daysWeather.time.count {
+                    cell.configure(with: daysWeather.time[indexPath.row], iconCode: "01d", temp: daysWeather.temp[indexPath.row])
+                } else {
+                    cell.configure(with: "빈칸", iconCode: "01d", temp: 0)
+                }
+                
+                
+                return cell
+            } else if indexPath.section == 1 {
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DayCollectionViewCell.identifier, for: indexPath) as! DayCollectionViewCell
+                // 5일간의 날씨 표시
+                // test 231003
+                print("indexPath.row: \(indexPath.row)")
+                if indexPath.row < WeatherViewModel.fiveDays.count {
+                    let day = WeatherViewModel.fiveDays[indexPath.row]
+                    let daysTemp = WeatherViewModel.fiveDaysTemp[indexPath.row].temp
+                    cell.configure(with: day, icon: "icon", lowTemp: Double(daysTemp.min()!) ?? 0, highTemp: Double(daysTemp.max()!) ?? 0)
+                } else {
+                    cell.configure(with: "time", icon: "icon", lowTemp: 0, highTemp: 10)
+                }
+                
+                return cell
+            }
+            else {
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+                cell.backgroundColor = .yellow
+                
+                return cell
+            }
         })
         
         dataSource.supplementaryViewProvider = { (collectionView, kind, indexPath) in
             
-                guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: CellHeaderView.identifier, for: indexPath) as? CellHeaderView else {
-                    fatalError("Could not dequeue sectionHeader: \(CellHeaderView.identifier)")
-                }
-                return sectionHeader
+            guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: CellHeaderView.identifier, for: indexPath) as? CellHeaderView else {
+                fatalError("Could not dequeue sectionHeader: \(CellHeaderView.identifier)")
+            }
+            return sectionHeader
             
             
-           
+            
         }
     }
     
@@ -230,35 +273,35 @@ class MainWeatherVC: UIViewController {
 
 extension MainWeatherVC: UIScrollViewDelegate {
     
-//    func updateOffset(offsetY: CGFloat) {
-//
-//
-//        guard offsetY < -75 else { return }
-//
-//        let diff = lastPositionY - offsetY
-//
-//        self.currentOffsetY = currentOffsetY + diff
-//        print(lastPositionY, offsetY, diff)
-//
-//        heightConstraint.constant = currentOffsetY
-//
-//        lastPositionY = offsetY
-//
-//    }
+    //    func updateOffset(offsetY: CGFloat) {
+    //
+    //
+    //        guard offsetY < -75 else { return }
+    //
+    //        let diff = lastPositionY - offsetY
+    //
+    //        self.currentOffsetY = currentOffsetY + diff
+    //        print(lastPositionY, offsetY, diff)
+    //
+    //        heightConstraint.constant = currentOffsetY
+    //
+    //        lastPositionY = offsetY
+    //
+    //    }
     
     
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
         guard scrollView.contentOffset.y <= 0 else { return }
-      
+        
         if scrollView.contentOffset.y > -260 {
             heightConstraint.constant = max(abs(scrollView.contentOffset.y), 105)
             
             mainHeaderView.topConstraint.constant = max((6 / 31) * abs(scrollView.contentOffset.y) - (630 / 31), -5)
             
             print(mainHeaderView.topConstraint.constant)
-
+            
         } else {
             heightConstraint.constant = 260
             mainHeaderView.topConstraint.constant = 30
@@ -267,9 +310,133 @@ extension MainWeatherVC: UIScrollViewDelegate {
         
     }
     
-  
+    
 }
 
 extension MainWeatherVC: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        // Test: WeatherViewController 실행(임의로 isSelected 사용)
+        if indexPath.section == 0 {
+            let weatherViewController = WeatherViewController()
+            
+            print("indexPath.section: \(indexPath.section)")
+            weatherViewController.section = indexPath.section
+            
+            present(weatherViewController, animated: true, completion: nil)
+        } else if indexPath.section == 1 {
+            let weatherViewController = WeatherViewController()
+            
+            print("indexPath.section: \(indexPath.section)")
+            weatherViewController.section = indexPath.section
+            
+            present(weatherViewController, animated: true, completion: nil)
+        }
+    }
+}
+
+extension MainWeatherVC: CLLocationManagerDelegate {
+    // MARK: 현재 위치 파악 함수.
+    private func setLocationManager() {
+        // 델리게이트를 설정하고,
+        locationManager.delegate = self
+        // 거리 정확도
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        // 위치 사용 허용 알림
+        locationManager.requestWhenInUseAuthorization()
+        // 위치 사용을 허용하면 현재 위치 정보를 가져옴
+        if CLLocationManager.locationServicesEnabled() {
+            locationManager.startUpdatingLocation()
+        } else {
+            print("위치 서비스 허용 off")
+        }
+    }
     
+    // 위치 업데이트를 수신할 때 호출되는 메서드
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let location = locations.first {
+            let latitude = location.coordinate.latitude
+            let longitude = location.coordinate.longitude
+            
+            // OpenWeatherMap API 엔드포인트 및 API 키 설정
+            let baseURL = "https://api.openweathermap.org/data/2.5/forecast"
+            let apiKey = WeatherAPIService().apiKey
+            let urlString = "\(baseURL)?lat=\(latitude)&lon=\(longitude)&appid=\(apiKey)"
+            
+            // URLSession을 사용하여 데이터 가져오기
+            if let url = URL(string: urlString) {
+                let session = URLSession.shared
+                let task = session.dataTask(with: url) { (data, response, error) in
+                    if let error = error {
+                        print("데이터를 가져오는 중 오류 발생: \(error)")
+                    } else if let data = data {
+                        // 데이터가 성공적으로 가져온 경우
+                        do {
+                            // JSON 디코딩
+                            if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                                // 예보 데이터 확인
+                                if let list = json["list"] as? [[String: Any]] {
+                                    
+                                    // 같은 날짜끼리 묶기
+                                    var dayParts: [String] = []
+                                    
+                                    for forecast in list {
+                                        if let dtTxt = forecast["dt_txt"] as? String,
+                                           let main = forecast["main"] as? [String: Any],
+                                           let temp = main["temp"] as? Double
+//                                           let weather = forecast["weather"] as? [String: Any],
+//                                           let icon = weather["icon"] as? String
+                                        {
+                                            // 날짜 및 시간대별 온도 출력
+                                            // print("main: \(main), Date/Time: \(dtTxt), Temperature: \(temp - 273.15) ℃")
+                                            let tempChange = temp - 273.15
+                                            // print("Date/Time: \(dtTxt), Temperature: \(tempChange) ℃")
+                                            WeatherViewModel.tempOfChart.append(tempChange)
+                                            WeatherViewModel.timeOfChart.append(dtTxt)
+                                            
+                                            // 공백 기준으로 문자열 자르기 ex) 2023-10-06 12:00:00 -> 2023-10-06, 12:00:00
+                                            let parts = dtTxt.split(separator: " ")
+                                            let day = String(parts[0])
+                                            let time = String(parts[1])
+                                            
+                                            if !WeatherViewModel.fiveDays.contains(day) {
+                                                WeatherViewModel.fiveDays.append(day)
+                                                // WeatherViewModel.fiveDaysTemp에 온도를 저장하는 빈 FivedayTemp 구조체 형식을 추가해준다.
+                                                WeatherViewModel.fiveDaysTemp.append(FivedayTemp(time: [], temp: []))
+                                            }
+                                            
+                                            // 입력받은 일의 수를 파악하여(fiveDays) 시간대별 온도를 저장할 배열(fiveDaysTemp)에 index값으로 사용함.
+                                            if !WeatherViewModel.fiveDaysTemp[WeatherViewModel.fiveDays.count-1].time.contains(time) {
+                                                WeatherViewModel.fiveDaysTemp[WeatherViewModel.fiveDays.count-1].time.append(time)
+                                                WeatherViewModel.fiveDaysTemp[WeatherViewModel.fiveDays.count-1].temp.append(tempChange)
+                                            }
+                                            // print("저장 상태 : \(WeatherViewModel.fiveDaysTemp)")
+                                        }
+                                    }
+                                    
+                                    for i in 0..<WeatherViewModel.fiveDays.count {
+                                        print("i: \(i)")
+                                        print("WeatherViewModel.fiveDays[i]: \(WeatherViewModel.fiveDays[i])")
+                                        print("WeatherViewModel.fiveDaysTemp[i]: \(WeatherViewModel.fiveDaysTemp[i])")
+                                    }
+                                    
+                                    // API 호출이 완료된 후 화면 업데이트
+                                    DispatchQueue.main.async {
+                                        // API 호출이 끝나고 실행
+                                        // 임시로 Indicator Test
+                                        // self.activityIndicator.stopAnimating()
+                                        // self.activityIndicator.removeFromSuperview()
+                                        self.configureDataSource()
+                                        self.applySnapshot()
+                                    }
+                                }
+                            }
+                        } catch {
+                            print("JSON 데이터 디코딩 중 오류 발생: \(error)")
+                        }
+                    }
+                }
+                task.resume()
+            }
+        }
+    }
 }
