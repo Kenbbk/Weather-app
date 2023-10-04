@@ -79,7 +79,6 @@ class WeatherAPIService {
             // 성공
             if let weatherResponse = weatherResponse {
                 print("현재 위치 날씨 정보 성공")
-                print(weatherResponse)
                 completion(.success(weatherResponse)) // 성공한 데이터 저장
             } else {
                 print("현재 위치 날씨 정보 실패")
