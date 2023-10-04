@@ -382,9 +382,10 @@ extension MainWeatherVC: CLLocationManagerDelegate {
                                     for forecast in list {
                                         if let dtTxt = forecast["dt_txt"] as? String,
                                            let main = forecast["main"] as? [String: Any],
-                                           let temp = main["temp"] as? Double,
-                                           let weather = forecast["weather"] as? [String: Any],
-                                           let icon = weather["icon"] as? String {
+                                           let temp = main["temp"] as? Double
+//                                           let weather = forecast["weather"] as? [String: Any],
+//                                           let icon = weather["icon"] as? String
+                                        {
                                             // 날짜 및 시간대별 온도 출력
                                             // print("main: \(main), Date/Time: \(dtTxt), Temperature: \(temp - 273.15) ℃")
                                             let tempChange = temp - 273.15
@@ -400,7 +401,7 @@ extension MainWeatherVC: CLLocationManagerDelegate {
                                             if !WeatherViewModel.fiveDays.contains(day) {
                                                 WeatherViewModel.fiveDays.append(day)
                                                 // WeatherViewModel.fiveDaysTemp에 온도를 저장하는 빈 FivedayTemp 구조체 형식을 추가해준다.
-                                                WeatherViewModel.fiveDaysTemp.append(FivedayTemp(time: [], icon: [], temp: []))
+                                                WeatherViewModel.fiveDaysTemp.append(FivedayTemp(time: [], temp: []))
                                             }
                                             
                                             // 입력받은 일의 수를 파악하여(fiveDays) 시간대별 온도를 저장할 배열(fiveDaysTemp)에 index값으로 사용함.
