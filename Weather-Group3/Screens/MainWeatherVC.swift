@@ -131,7 +131,10 @@ class MainWeatherVC: UIViewController {
                 
                 return cell
             }
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+            cell.backgroundColor = .yellow
 
+            return cell
         })
 //        dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
 //            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
@@ -343,7 +346,7 @@ extension MainWeatherVC: UICollectionViewDelegate {
             weatherViewController.section = indexPath.section
             
             present(weatherViewController, animated: true, completion: nil)
-        }   if indexPath.section == 2 {
+        }  else if indexPath.section == 2 {
             let mapViewController = MapViewController()
             present(mapViewController, animated: true) }
     }
