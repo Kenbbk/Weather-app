@@ -431,7 +431,7 @@ extension MainWeatherVC: CLLocationManagerDelegate {
                         print("WeatherViewModel.fiveDays : \(WeatherViewModel.fiveDays)")
                         print("WeatherViewModel.fiveDaysTemp : \(WeatherViewModel.fiveDaysTemp)")
                         
-                        var viewModel = TestViewModel.allDaysWeather
+                        var viewModel = WeatherViewModel.allDaysWeather
                         
 //                        [Weather_Group3.FiveDayTemp(time: ["15 시", "18 시", "21 시"], icon: ["01d", "01d", "01d"], temp: [17.600000000000023, 20.379999999999995, 25.590000000000032]),
                         
