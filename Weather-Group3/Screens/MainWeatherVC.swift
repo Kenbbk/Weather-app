@@ -20,10 +20,10 @@ class MainWeatherVC: UIViewController {
     //MARK: - Properties
     let locationManager = CLLocationManager()
     
-
+    
     
     var heightConstraint: NSLayoutConstraint!
-        
+    
     var sections: [Section] = [.first, .second, .third, .fourth]
     
     let mainHeaderView: MainHeaderView = .init(frame: .zero)
@@ -46,17 +46,19 @@ class MainWeatherVC: UIViewController {
     
     var header: NSCollectionLayoutBoundarySupplementaryItem!
     
+    let activityIndicator = UIActivityIndicatorView(style: .large)
+    
     //MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // test 231003
         // Indicator 임시로 테스트
-        //        activityIndicator.center = view.center
-        //        view.addSubview(activityIndicator)
-        //        activityIndicator.startAnimating()
+        activityIndicator.center = view.center
+        view.addSubview(activityIndicator)
+        activityIndicator.startAnimating()
         
-//        view.backgroundColor = .white
+        //        view.backgroundColor = .white
         header = supplementaryHeaderItem()
         view.backgroundColor = UIColor(patternImage: UIImage(named: "background2")!)
         configureUI()
@@ -81,7 +83,7 @@ class MainWeatherVC: UIViewController {
     //MARK: - Helpers
     
     private func configureDataSource() {
-
+        
         dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
             if indexPath.section == 0 {
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TodayCollectionViewCell.identifier, for: indexPath) as! TodayCollectionViewCell
@@ -113,22 +115,22 @@ class MainWeatherVC: UIViewController {
                 }
                 return cell
             }
-//            else if indexPath.section == 1 {
-//                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DayCollectionViewCell.identifier, for: indexPath) as! DayCollectionViewCell
-//                // 5일간의 날씨 표시
-//                // test 231003
-//                print("indexPath.row: \(indexPath.row)")
-//                if indexPath.row < WeatherViewModel.fiveDays.count {
-//                    let day = WeatherViewModel.fiveDays[indexPath.row]
-//                    let daysTemp = WeatherViewModel.fiveDaysTemp[indexPath.row].temp
-//                    cell.configure(with: day, icon: "icon", lowTemp: Double(daysTemp.min()!) ?? 0, highTemp: Double(daysTemp.max()!) ?? 0)
-//                } else {
-//                    cell.configure(with: "time", icon: "icon", lowTemp: 0, highTemp: 10)
-//                }
-//                
-//                return cell
-//            }
-               else if indexPath.section == 2 {
+            //            else if indexPath.section == 1 {
+            //                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DayCollectionViewCell.identifier, for: indexPath) as! DayCollectionViewCell
+            //                // 5일간의 날씨 표시
+            //                // test 231003
+            //                print("indexPath.row: \(indexPath.row)")
+            //                if indexPath.row < WeatherViewModel.fiveDays.count {
+            //                    let day = WeatherViewModel.fiveDays[indexPath.row]
+            //                    let daysTemp = WeatherViewModel.fiveDaysTemp[indexPath.row].temp
+            //                    cell.configure(with: day, icon: "icon", lowTemp: Double(daysTemp.min()!) ?? 0, highTemp: Double(daysTemp.max()!) ?? 0)
+            //                } else {
+            //                    cell.configure(with: "time", icon: "icon", lowTemp: 0, highTemp: 10)
+            //                }
+            //
+            //                return cell
+            //            }
+            else if indexPath.section == 2 {
                 if let mapCell = collectionView.dequeueReusableCell(withReuseIdentifier: "mapCell", for: indexPath) as? MapCell {
                     return mapCell
                 }
@@ -140,10 +142,10 @@ class MainWeatherVC: UIViewController {
             }
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
             cell.backgroundColor = .yellow
-
+            
             return cell
         })
-
+        
         
         dataSource.supplementaryViewProvider = { (collectionView, kind, indexPath) in
             
@@ -339,7 +341,7 @@ extension MainWeatherVC: UIScrollViewDelegate {
 
 extension MainWeatherVC: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-       
+        
         if indexPath.section == 0 {
             let weatherViewController = WeatherViewController()
             
@@ -385,7 +387,7 @@ extension MainWeatherVC: CLLocationManagerDelegate {
             // 위도와 경도 가져오기
             let latitude = location.coordinate.latitude
             let longitude = location.coordinate.longitude
-
+            
             let baseURL = "https://api.openweathermap.org/data/2.5/forecast"
             let apiKey = WeatherAPIService().apiKey
             let urlString = "\(baseURL)?lat=\(latitude)&lon=\(longitude)&appid=\(apiKey)"
@@ -422,10 +424,10 @@ extension MainWeatherVC: CLLocationManagerDelegate {
                                 WeatherViewModel.fiveDaysTemp[WeatherViewModel.fiveDays.count-1].icon.append(forecast.weather.first!.icon)
                                 WeatherViewModel.fiveDaysTemp[WeatherViewModel.fiveDays.count-1].temp.append(tempChange)
                             }
-
+                            
                             // 임시로 Indicator Test
-                            //                                        // self.activityIndicator.stopAnimating()
-                            //                                        // self.activityIndicator.removeFromSuperview()
+                             self.activityIndicator.stopAnimating()
+                             self.activityIndicator.removeFromSuperview()
                             self.configureDataSource()
                             self.applySnapshot()
                         }
