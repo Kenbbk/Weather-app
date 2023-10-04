@@ -106,9 +106,9 @@ class MainWeatherVC: UIViewController {
                     let daysTemp = WeatherViewModel.fiveDaysTemp[indexPath.row].temp
                     cell.configure(with: day, iconCode: daysIcon[0], lowTemp: Double(daysTemp.min()!) , highTemp: Double(daysTemp.max()!))
                     
-//                    let tuple = TempRangeService().getTempRange(min: 10, max: 30, currentMin: Double(daysTemp.min()!), currentMax: Double(daysTemp.max()!))
-//                    cell.colorViews(min: tuple.0, max: tuple.1)
-//                    cell.colorBar.colors = ColorService().getColors(min: -7, max: 21)
+                    //                    let tuple = TempRangeService().getTempRange(min: 10, max: 30, currentMin: Double(daysTemp.min()!), currentMax: Double(daysTemp.max()!))
+                    //                    cell.colorViews(min: tuple.0, max: tuple.1)
+                    //                    cell.colorBar.colors = ColorService().getColors(min: -7, max: 21)
                     
                 } else {
                     cell.configure(with: "time", iconCode: "01d", lowTemp: 0, highTemp: 10)
@@ -381,25 +381,27 @@ extension MainWeatherVC: CLLocationManagerDelegate {
                 switch result {
                 case .success(let weatherResponse):
                     DispatchQueue.main.async {
+                        
+                        var fiveDays: [String] = []
+                        var fiveDaysTemp: [FiveDayTemp] = []
+                        
                         for forecast in weatherResponse.list {
-                            
-                            // 날짜와 시간 저장
-                            WeatherViewModel.timeOfChart.append(forecast.dt_txt)
-                            
                             // 온도 저장.
                             let tempChange = forecast.main.temp - 273.15
-                            WeatherViewModel.tempOfChart.append(tempChange)
                             
                             // 공백 기준으로 문자열 자르기 ex) 2023-10-06 12:00:00 -> 2023-10-06, 12:00:00
                             let parts = forecast.dt_txt.split(separator: " ")
                             let day = String(parts[0])
-                            let time = String(parts[1])
                             
+                            let timeParts = String(parts[1]).split(separator: ":00")
+                            let time = "\(timeParts[0]) 시"
+                            
+                            // 기존
                             // 년월일 저장
                             if !WeatherViewModel.fiveDays.contains(day) {
                                 WeatherViewModel.fiveDays.append(day)
                                 // WeatherViewModel.fiveDaysTemp에 온도를 저장하는 빈 FivedayTemp 구조체 형식을 추가해준다.
-                                WeatherViewModel.fiveDaysTemp.append(FivedayTemp(time: [], icon: [], temp: []))
+                                WeatherViewModel.fiveDaysTemp.append(FiveDayTemp(time: [], icon: [], temp: []))
                             }
                             
                             // 입력받은 일의 수를 파악하여(fiveDays) 시간대별 온도를 저장할 배열(fiveDaysTemp)에 index값으로 사용함.
@@ -409,12 +411,49 @@ extension MainWeatherVC: CLLocationManagerDelegate {
                                 WeatherViewModel.fiveDaysTemp[WeatherViewModel.fiveDays.count-1].temp.append(tempChange)
                             }
                             
-                            // 임시로 Indicator Test
-                             self.activityIndicator.stopAnimating()
-                             self.activityIndicator.removeFromSuperview()
-                            self.configureDataSource()
-                            self.applySnapshot()
+                            // 신규
+                            // 년월일 저장
+                            if !fiveDays.contains(day) {
+                                fiveDays.append(day)
+                                // WeatherViewModel.fiveDaysTemp에 온도를 저장하는 빈 FivedayTemp 구조체 형식을 추가해준다.
+                                fiveDaysTemp.append(FiveDayTemp(time: [], icon: [], temp: []))
+                            }
+                            
+                            // 입력받은 일의 수를 파악하여(fiveDays) 시간대별 온도를 저장할 배열(fiveDaysTemp)에 index값으로 사용함.
+                            if !fiveDaysTemp[fiveDays.count-1].time.contains(time) {
+                                fiveDaysTemp[fiveDays.count-1].time.append(time)
+                                fiveDaysTemp[fiveDays.count-1].icon.append(forecast.weather.first!.icon)
+                                fiveDaysTemp[fiveDays.count-1].temp.append(tempChange)
+                            }
                         }
+                        
+                        print(weatherResponse.list)
+                        print("WeatherViewModel.fiveDays : \(WeatherViewModel.fiveDays)")
+                        print("WeatherViewModel.fiveDaysTemp : \(WeatherViewModel.fiveDaysTemp)")
+                        
+                        var viewModel = TestViewModel.allDaysWeather
+                        
+//                        [Weather_Group3.FiveDayTemp(time: ["15 시", "18 시", "21 시"], icon: ["01d", "01d", "01d"], temp: [17.600000000000023, 20.379999999999995, 25.590000000000032]),
+                        
+                        for index in 0..<fiveDaysTemp.count {
+                            var timeWeather: [TimeWeather] = []
+                            
+                            for timeIndex in 0..<fiveDaysTemp[index].time.count {
+                                timeWeather.append(TimeWeather(time: fiveDaysTemp[index].time[timeIndex], temp: fiveDaysTemp[index].temp[timeIndex], icon: fiveDaysTemp[index].icon[timeIndex]))
+                            }
+                            
+                            let oneDayWeather: OneDayWeather = OneDayWeather(day: fiveDays[index], highTemp: fiveDaysTemp[index].temp.max()!, lowTemp: fiveDaysTemp[index].temp.min()!, icon: fiveDaysTemp[index].icon.first!, timeWeather: timeWeather)
+                            
+                            viewModel.append(oneDayWeather)
+                        }
+                        
+                        print("viewModel: \(viewModel)")
+                        
+                        // Indicator
+                        self.activityIndicator.stopAnimating()
+                        self.activityIndicator.removeFromSuperview()
+                        self.configureDataSource()
+                        self.applySnapshot()
                     }
                 case .failure(_ ):
                     print("실패: error")

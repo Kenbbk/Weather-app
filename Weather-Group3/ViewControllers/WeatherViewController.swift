@@ -51,6 +51,8 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         setUI()
         setConstraint()
         insertDataSource() // scroll View
+        
+        setDate()
         setTemp()
         setLineChart()
         setForecast()
@@ -88,10 +90,37 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         dateScrollView.dataSource = Days.getDataSource()
     }
     
+    private func setDate() {
+        
+        let dateFormatter = DateFormatter()
+        
+        dateFormatter.dateFormat = "YYYY-mm-dd"
+        var inputDate: Date = Date()
+        if section == 0 {
+            inputDate = dateFormatter.date(from: WeatherViewModel.fiveDays[0])!
+        } else if section == 1 {
+            inputDate = dateFormatter.date(from: WeatherViewModel.fiveDays[row!])!
+        }
+        
+        dateFormatter.dateFormat = "YYYY년 mm월 dd일 EEE요일"
+        
+        let outputDate = dateFormatter.string(from: inputDate)
+        
+        let selectedDate: String = outputDate
+        print("selectedDate : \(selectedDate)")
+        
+        tempGraphView.setDate(date: selectedDate)
+    }
+    
     private func setTemp() {
-        let currentTemp: String = String(WeatherViewModel.fiveDaysTemp[row ?? 0].temp[0])
-        let highTemp: String = String(WeatherViewModel.fiveDaysTemp[row ?? 0].temp.max()!)
-        let lowTemp: String = String(WeatherViewModel.fiveDaysTemp[row ?? 0].temp.min()!)
+        
+        let formattedCurrentTemp: String = String(format: "%.1f", WeatherViewModel.fiveDaysTemp[row ?? 0].temp[0])
+        let formattedHighTemp: String = String(format: "%.1f", WeatherViewModel.fiveDaysTemp[row ?? 0].temp.max()!)
+        let formattedLowTemp: String = String(format: "%.1f", WeatherViewModel.fiveDaysTemp[row ?? 0].temp.min()!)
+        
+        let currentTemp: String = formattedCurrentTemp
+        let highTemp: String = formattedHighTemp
+        let lowTemp: String = formattedLowTemp
         
         tempGraphView.setTemp(currentTemp: currentTemp, highTemp: highTemp, lowTemp: lowTemp)
     }
