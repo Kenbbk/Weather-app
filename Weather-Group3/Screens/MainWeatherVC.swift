@@ -77,6 +77,8 @@ class MainWeatherVC: UIViewController {
         //        applySnapshot()
         
         collectionView.delegate = self
+        // Test(sr) - MapCell 등록
+        collectionView.register(MapCell.self, forCellWithReuseIdentifier: "mapCell")
         
         // Test: 특정 위치의 날씨정보 얻어오기
         setLocationManager()
@@ -88,6 +90,7 @@ class MainWeatherVC: UIViewController {
     //MARK: - Helpers
     
     private func configureDataSource() {
+
         dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
             if indexPath.section == 0 {
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TodayCollectionViewCell.identifier, for: indexPath) as! TodayCollectionViewCell
@@ -118,13 +121,26 @@ class MainWeatherVC: UIViewController {
                 
                 return cell
             }
-            else {
+               else if indexPath.section == 2 {
+                if let mapCell = collectionView.dequeueReusableCell(withReuseIdentifier: "mapCell", for: indexPath) as? MapCell {
+                    return mapCell
+                }
+            } else {
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
                 cell.backgroundColor = .yellow
                 
                 return cell
             }
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+            cell.backgroundColor = .yellow
+
+            return cell
         })
+//        dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
+//            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+//            cell.backgroundColor = .yellow
+//            return cell
+//        })
         
         dataSource.supplementaryViewProvider = { (collectionView, kind, indexPath) in
             
@@ -315,7 +331,7 @@ extension MainWeatherVC: UIScrollViewDelegate {
 
 extension MainWeatherVC: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        // Test: WeatherViewController 실행(임의로 isSelected 사용)
+       
         if indexPath.section == 0 {
             let weatherViewController = WeatherViewController()
             
@@ -330,7 +346,9 @@ extension MainWeatherVC: UICollectionViewDelegate {
             weatherViewController.section = indexPath.section
             
             present(weatherViewController, animated: true, completion: nil)
-        }
+        }  else if indexPath.section == 2 {
+            let mapViewController = MapViewController()
+            present(mapViewController, animated: true) }
     }
 }
 
@@ -437,6 +455,7 @@ extension MainWeatherVC: CLLocationManagerDelegate {
                 }
                 task.resume()
             }
+
         }
     }
 }
