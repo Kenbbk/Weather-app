@@ -20,39 +20,24 @@ class MainWeatherVC: UIViewController {
     //MARK: - Properties
     let locationManager = CLLocationManager()
     
-    var lastPositionY: CGFloat = 0
+
     
-    var currentOffsetY: CGFloat = 0
-    
-    let sectionPadding: CGFloat = 15
-    
-    let sectionTopPadding: CGFloat = 5
-    
-    var heightConstraint: NSLayoutConstraint! {
-        didSet {
-            print("changed")
-        }
-    }
-    
-    //    var heightFloat: CGFloat {
-    //        print(heightConstraint.constant)
-    //        return heightConstraint.constant
-    
-    //    }
-    ////
+    var heightConstraint: NSLayoutConstraint!
+        
     var sections: [Section] = [.first, .second, .third, .fourth]
     
     let mainHeaderView: MainHeaderView = .init(frame: .zero)
     
     lazy var collectionView: UICollectionView = {
         let view = UICollectionView(frame: view.bounds, collectionViewLayout: makeLayout())
-        view.contentInset = .init(top: 260, left: 0, bottom: 0, right: 0)
+        view.showsVerticalScrollIndicator = false
         view.register(CellHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: CellHeaderView.identifier)
         
         view.register(TodayCollectionViewCell.self, forCellWithReuseIdentifier: TodayCollectionViewCell.identifier)
         view.register(DayCollectionViewCell.self, forCellWithReuseIdentifier: DayCollectionViewCell.identifier)
         view.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
-        view.backgroundColor = .white
+        view.register(SecondCell.self, forCellWithReuseIdentifier: SecondCell.identifier)
+        view.backgroundColor = .clear
         
         return view
     }()
@@ -71,7 +56,7 @@ class MainWeatherVC: UIViewController {
         //        view.addSubview(activityIndicator)
         //        activityIndicator.startAnimating()
         
-        view.backgroundColor = .white
+//        view.backgroundColor = .white
         header = supplementaryHeaderItem()
         view.backgroundColor = UIColor(patternImage: UIImage(named: "background2")!)
         configureUI()
@@ -113,20 +98,25 @@ class MainWeatherVC: UIViewController {
                 
                 return cell
             } else if indexPath.section == 1 {
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DayCollectionViewCell.identifier, for: indexPath) as! DayCollectionViewCell
-                // 5일간의 날씨 표시
-                // test 231003
-                print("indexPath.row: \(indexPath.row)")
-                if indexPath.row < WeatherViewModel.fiveDays.count {
-                    let day = WeatherViewModel.fiveDays[indexPath.row]
-                    let daysTemp = WeatherViewModel.fiveDaysTemp[indexPath.row].temp
-                    cell.configure(with: day, icon: "icon", lowTemp: Double(daysTemp.min()!) ?? 0, highTemp: Double(daysTemp.max()!) ?? 0)
-                } else {
-                    cell.configure(with: "time", icon: "icon", lowTemp: 0, highTemp: 10)
-                }
-                
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SecondCell.identifier, for: indexPath) as! SecondCell
+                cell.
                 return cell
             }
+//            else if indexPath.section == 1 {
+//                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DayCollectionViewCell.identifier, for: indexPath) as! DayCollectionViewCell
+//                // 5일간의 날씨 표시
+//                // test 231003
+//                print("indexPath.row: \(indexPath.row)")
+//                if indexPath.row < WeatherViewModel.fiveDays.count {
+//                    let day = WeatherViewModel.fiveDays[indexPath.row]
+//                    let daysTemp = WeatherViewModel.fiveDaysTemp[indexPath.row].temp
+//                    cell.configure(with: day, icon: "icon", lowTemp: Double(daysTemp.min()!) ?? 0, highTemp: Double(daysTemp.max()!) ?? 0)
+//                } else {
+//                    cell.configure(with: "time", icon: "icon", lowTemp: 0, highTemp: 10)
+//                }
+//                
+//                return cell
+//            }
                else if indexPath.section == 2 {
                 if let mapCell = collectionView.dequeueReusableCell(withReuseIdentifier: "mapCell", for: indexPath) as? MapCell {
                     return mapCell
@@ -310,7 +300,6 @@ class MainWeatherVC: UIViewController {
         layout.configuration = config
         
         return layout
-        
         
     }
     
