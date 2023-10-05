@@ -16,7 +16,7 @@ class BackgroundReusableView: UICollectionReusableView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         layer.cornerRadius = 15
-        backgroundColor = .gray.withAlphaComponent(0.1)
+        backgroundColor = .black.withAlphaComponent(0.2)
         addGesture()
     }
     

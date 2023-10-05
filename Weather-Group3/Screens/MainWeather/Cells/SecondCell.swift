@@ -69,13 +69,13 @@ class SecondCell: UICollectionViewCell {
             case .failure(let error):
                 print(error)
             case .success(let image):
-                DispatchQueue.main.asyncAndWait {
+                DispatchQueue.main.async {
                     self.imageView.image = image
                 }
             }
         }
         
-        dayLabel.text = model.day
+        dayLabel.text = model.day.convertDateIntoDay()
         lowLabel.text = "\(Int(model.lowTemp))"
         highLabel.text = "\(Int(model.highTemp))"
         
