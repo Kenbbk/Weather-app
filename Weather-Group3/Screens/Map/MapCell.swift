@@ -15,13 +15,10 @@ class MapCell: UICollectionViewCell {
 
     let manager = CLLocationManager()
 
-    // 위치 디폴트: 서울
     var currentLatitude: Double = 37.5729
     var currentLongitude: Double = 126.9794
 
-    var temperature: Int = 0 // 온도
-    var pressure: Int = 0 // 기압
-    var humidity: Int = 0 // 습도
+    var temperature: Int = 0
 
     var pinTintColor: UIColor = .systemBackground
     var annotationText: String = "24℃"
@@ -46,7 +43,6 @@ extension MapCell {
         mapView.mapType = .hybrid
 
         addSubview(mapView)
-
         mapView.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
@@ -56,23 +52,6 @@ extension MapCell {
             mapView.trailingAnchor.constraint(equalTo: trailingAnchor),
 
         ])
-    }
-
-    private func addAnnotation(pinTintColor: UIColor, annotationText: String, systemImageName: String) {
-        let seoulCoordinate = CLLocationCoordinate2D(latitude: 37.5729, longitude: 126.9794)
-
-        let temperatureAnnotationText = "\(temperature)℃"
-        let annotation = CustomAnnotation(
-            pinTintColor: .systemBackground,
-            annotationText: temperatureAnnotationText,
-            systemImageName: "thermometer.low"
-        )
-        annotation.coordinate = seoulCoordinate
-        mapView.addAnnotation(annotation)
-
-        let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
-        let region = MKCoordinateRegion(center: seoulCoordinate, span: span)
-        mapView.setRegion(region, animated: false)
     }
 }
 
@@ -86,7 +65,7 @@ extension MapCell: CLLocationManagerDelegate {
 
     func showLocation(latitude: Double, longitude: Double, pinTintColor: UIColor, annotationText: String, systemImageName: String) {
         let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-        let span = MKCoordinateSpan(latitudeDelta: 5.0, longitudeDelta: 5.0)
+        let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
         let region = MKCoordinateRegion(center: coordinate, span: span)
         mapView.setRegion(region, animated: true)
         setCustomPin(pinTintColor: pinTintColor, annotationText: annotationText, systemImageName: systemImageName)
@@ -113,16 +92,16 @@ extension MapCell: CLLocationManagerDelegate {
                     if let firstWeather = weatherResponse.list.first {
                         let tempChange = Int(firstWeather.main.temp - 273.15)
                         self.temperature = tempChange
-                        self.pressure = firstWeather.main.pressure
-                        self.humidity = firstWeather.main.humidity
+                        self.annotationText = "\(self.temperature)℃"
+
+                        self.showLocation(latitude: currentLatitude, longitude: currentLongitude, pinTintColor: self.pinTintColor, annotationText: self.annotationText, systemImageName: self.systemImageName)
                     }
-                    print("#mapVC: \(weatherResponse.list)")
+                    print("#mapcell: \(weatherResponse.list)")
                 }
             case .failure:
                 print("실패: error")
             }
         }
-        showLocation(latitude: currentLatitude, longitude: currentLongitude, pinTintColor: pinTintColor, annotationText: annotationText, systemImageName: systemImageName)
     }
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -130,7 +109,9 @@ extension MapCell: CLLocationManagerDelegate {
             currentLatitude = location.coordinate.latitude
             currentLongitude = location.coordinate.longitude
             manager.stopUpdatingLocation()
-            getWeatherInfo(currentLatitude: currentLatitude, currentLongitude: currentLongitude)
+            DispatchQueue.global(qos: .background).async {
+                self.getWeatherInfo(currentLatitude: self.currentLatitude, currentLongitude: self.currentLongitude)
+            }
         }
     }
 }
