@@ -71,6 +71,7 @@ class MainWeatherVC: UIViewController {
         initialConfigurerUI()
         setLocationManager()
         
+        
     }
     
     
@@ -258,6 +259,11 @@ extension MainWeatherVC: CLLocationManagerDelegate {
         }
     }
     
+    private func stopIndicator() {
+        self.activityIndicator.stopAnimating()
+        self.activityIndicator.removeFromSuperview()
+    }
+    
     // 위치 업데이트를 수신할 때 호출되는 메서드
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let location = locations.first {
@@ -271,26 +277,31 @@ extension MainWeatherVC: CLLocationManagerDelegate {
             
             WeatherAPIService().getLocalWeather(url: urlString) { result in
                 switch result {
+                
+                case .failure(_):
+                    print("실패: error")
+                
                 case .success(let weatherResponse):
                     
                     self.highLowTemp = HighLowTempSerivce().getHighLowTemp(threeHourList: weatherResponse.list)
+                    self.oneDayWeathers = WeatherProvider().getWeathers(dayWeather: weatherResponse)
+                    self.currentLocationForecast = WeatherProvider().getCityInfo(dayWeather: weatherResponse, oneDayWeather: self.oneDayWeathers[0])
+                    
                     DispatchQueue.main.async {
                         
                         // 전체 날짜
-                        self.oneDayWeathers = WeatherProvider().getWeathers(dayWeather: weatherResponse)
+                        
                         // Main Header View 오늘 날짜의 정보 표시
-                        self.currentLocationForecast = WeatherProvider().getCityInfo(dayWeather: weatherResponse, oneDayWeather: self.oneDayWeathers[0])
+                        
                         
                         // Indicator
-                        self.activityIndicator.stopAnimating()
-                        self.activityIndicator.removeFromSuperview()
+                        self.stopIndicator()
                         // API 통신 완료 후 UI 및 데이터 입력
                         self.configureUI()
                         self.configureDataSource()
                         self.applySnapshot()
                     }
-                case .failure(_ ):
-                    print("실패: error")
+               
                 }
             }
         }
