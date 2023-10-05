@@ -12,13 +12,12 @@ import UIKit
 class MapViewController: UIViewController {
     let buttonSize: CGFloat = 50.0
     
-    // 위치 디폴트: 서울
     var currentLatitude: Double = 37.5729
     var currentLongitude: Double = 126.9794
     
-    var temperature: Int = 0 // 온도
-    var pressure: Int = 0 // 기압
-    var humidity: Int = 0 // 습도
+    var temperature: Int = 0
+    var pressure: Int = 0
+    var humidity: Int = 0
     
     var pinTintColor: UIColor = .systemBackground
     var annotationText: String = "24℃"
