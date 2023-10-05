@@ -15,7 +15,6 @@ class MapCell: UICollectionViewCell {
 
     let manager = CLLocationManager()
 
-    // 위치 디폴트: 서울
     var currentLatitude: Double = 37.5729
     var currentLongitude: Double = 126.9794
 
@@ -54,23 +53,6 @@ extension MapCell {
 
         ])
     }
-
-//    private func addAnnotation(pinTintColor: UIColor, annotationText: String, systemImageName: String) {
-//        let seoulCoordinate = CLLocationCoordinate2D(latitude: 37.5729, longitude: 126.9794)
-//
-//        let temperatureAnnotationText = "\(temperature)℃"
-//        let annotation = CustomAnnotation(
-//            pinTintColor: .systemBackground,
-//            annotationText: temperatureAnnotationText,
-//            systemImageName: "thermometer.low"
-//        )
-//        annotation.coordinate = seoulCoordinate
-//        mapView.addAnnotation(annotation)
-//
-//        let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
-//        let region = MKCoordinateRegion(center: seoulCoordinate, span: span)
-//        mapView.setRegion(region, animated: false)
-//    }
 }
 
 extension MapCell: CLLocationManagerDelegate {
