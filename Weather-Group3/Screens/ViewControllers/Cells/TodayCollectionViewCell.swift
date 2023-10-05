@@ -17,7 +17,7 @@ class TodayCollectionViewCell: UICollectionViewCell {
     // MARK: - Properties
     lazy var timeLabel: UILabel = {
         let label = UILabel()
-        
+        label.textColor = .white
         label.font = UIFont.systemFont(ofSize: labelSize)
         
         return label
@@ -32,7 +32,7 @@ class TodayCollectionViewCell: UICollectionViewCell {
     
     lazy var tempLabel: UILabel = {
         let label = UILabel()
-
+        label.textColor = .white
         label.font = UIFont.systemFont(ofSize: labelSize)
         
         return label
@@ -75,14 +75,14 @@ class TodayCollectionViewCell: UICollectionViewCell {
         ])
     }
     
-    func configure(with time: String, iconCode: String, temp: Double) {
-        timeLabel.text = time
+    func configure(timeWeather: TimeWeather) {
+        timeLabel.text = timeWeather.time
         
         // 날씨 정보에서 icon 코드 추출
-        let code = iconCode
+        let code = timeWeather.icon
         displayWeatherIcon(iconCode: code, imageView: self.iconImageView)
         
-        let formattedTemp = String(format: "%.1f", temp)
+        let formattedTemp = String(format: "%.1f", timeWeather.temp)
         tempLabel.text = String(formattedTemp)
     }
     
