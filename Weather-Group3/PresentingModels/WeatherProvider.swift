@@ -16,7 +16,7 @@ class WeatherProvider {
             let time = weather.dt_txt.convertToTimeString()
             
             
-return TimeWeather(time: time, temp: weather.main.temp - 273.15, icon: weather.weather[0].icon)
+            return TimeWeather(time: time, temp: weather.main.temp, icon: weather.weather[0].icon)
         }
         
         return timeWeathers
