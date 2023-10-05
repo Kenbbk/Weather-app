@@ -12,6 +12,8 @@ extension String {
     func convertDateIntoDay() -> String {
         let dateFormatter = DateFormatter()
 //        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+//        let timeZone = TimeZone(secondsFromGMT: <#T##Int#>)
+//        dateFormatter.timeZone = .current
         dateFormatter.dateFormat = "yyyy-MM-dd"
         
         let convertDate = dateFormatter.date(from: self)
@@ -22,10 +24,23 @@ extension String {
     }
     
     func convertToTimeString() -> String {
-        let parts = self.split(separator: " ")
+        var dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        let convertDate = dateFormatter.date(from: self)
         
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+        dateFormatter.timeZone = .current
+        let a = dateFormatter.string(from: convertDate!)
+        
+        let parts = a.split(separator: " ")
+       
+
         let timeParts = String(parts[1]).split(separator: ":00")
         let time = "\(timeParts[0]) 시"
         return time
     }
 }
+
+
+
