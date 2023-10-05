@@ -8,6 +8,20 @@
 import Foundation
 
 class WeatherProvider {
+    
+    func getTimeWeathers(dayWeather: DayWeather) -> [TimeWeather] {
+        let list = dayWeather.list
+        
+        let timeWeathers = list.map { weather in
+            let time = weather.dt_txt.convertToTimeString()
+            
+            
+return TimeWeather(time: time, temp: weather.main.temp - 273.15, icon: weather.weather[0].icon)
+        }
+        
+        return timeWeathers
+    }
+    
     func getWeathers(dayWeather: DayWeather) -> [OneDayWeather] {
         var fiveDays: [String] = []
         var fiveDaysTemp: [FiveDayTemp] = []

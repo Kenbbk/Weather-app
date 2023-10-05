@@ -26,6 +26,7 @@ class MapCell: UICollectionViewCell {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+        mapView.isUserInteractionEnabled = false
         setup()
         getCurrentLocation()
         showLocation(latitude: currentLatitude, longitude: currentLongitude, pinTintColor: pinTintColor, annotationText: annotationText, systemImageName: systemImageName)
