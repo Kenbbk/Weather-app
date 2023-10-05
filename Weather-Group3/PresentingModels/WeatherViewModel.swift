@@ -40,10 +40,14 @@ struct OneDayWeather: Equatable, Hashable {
 }
 
 // 시간별 날씨
-struct TimeWeather: Equatable {
+struct TimeWeather: Equatable, Hashable {
     let time: String // 시간
     let temp: Double // 기온
     let icon: String // 아이콘
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(time)
+    }
 }
 
 // 현재 위치에 따른 날씨 정보

@@ -22,14 +22,14 @@ struct MainLayoutProvider {
                 
                 let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1)))
                 
-                let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .absolute(70), heightDimension: .estimated(95)), subitems: [item])
-                
+                let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .absolute(60), heightDimension: .estimated(95)), subitems: [item])
+                group.contentInsets = .init(top: 0, leading: 10, bottom: 0, trailing: 10)
                 let section = NSCollectionLayoutSection(group: group)
                 
                 section.orthogonalScrollingBehavior = .continuous
                
                 section.boundarySupplementaryItems = [supplementaryHeaderItem()]
-                section.contentInsets = .init(top: 0, leading: 0, bottom: 10, trailing: 0)
+                section.contentInsets = .init(top: 10, leading: 0, bottom: 10, trailing: 0)
                 
                 
                 let backgroundItem = NSCollectionLayoutDecorationItem.background(elementKind: BackgroundReusableView.identifier)
@@ -44,6 +44,8 @@ struct MainLayoutProvider {
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .absolute(50)), repeatingSubitem: item, count: 1)
                 
                 let section = NSCollectionLayoutSection(group: group)
+                
+                section.contentInsets = .init(top: 10, leading: 0, bottom: 0, trailing: 0)
                 
                 section.boundarySupplementaryItems = [supplementaryHeaderItem()]
                 
@@ -105,7 +107,7 @@ struct MainLayoutProvider {
     }
     
     private func supplementaryHeaderItem() -> NSCollectionLayoutBoundarySupplementaryItem {
-        let header = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(20)), elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
+        let header = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(45)), elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
         
         return header
     }

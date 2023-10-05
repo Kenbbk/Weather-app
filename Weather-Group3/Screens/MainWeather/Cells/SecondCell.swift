@@ -75,8 +75,7 @@ class SecondCell: UICollectionViewCell {
             }
         }
         
-        dayLabel.text = model.day
-//        TodayCollectionViewCell().displayWeatherIcon(iconCode: model.icon, imageView: self.imageView)
+        dayLabel.text = model.day.convertDateIntoDay()
         lowLabel.text = "\(Int(model.lowTemp))"
         highLabel.text = "\(Int(model.highTemp))"
         
