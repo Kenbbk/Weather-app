@@ -36,6 +36,9 @@ class MainWeatherVC: UIViewController {
     
     var oneDayWeathers: [OneDayWeather] = []
     
+    // Header View에 표시되는 정보
+    var currentLocationForecast: CurrentLocationForecast?
+    
     var heightConstraint: NSLayoutConstraint!
     
     let mainHeaderView: MainHeaderView = .init(frame: .zero)
@@ -65,7 +68,7 @@ class MainWeatherVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        configureUI()
+        initialConfigurerUI()
         setLocationManager()
         
     }
@@ -81,14 +84,17 @@ class MainWeatherVC: UIViewController {
     
     private func configureDataSource() {
         
+        // Main Header View
+        mainHeaderView.setCurrentLocation(currentLocationForecast: currentLocationForecast!)
+        
         dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
             switch itemIdentifier {
             case .first(_):
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TodayCollectionViewCell.identifier, for: indexPath) as! TodayCollectionViewCell
-            
-                let daysWeather = WeatherViewModel.fiveDaysTemp[0]
-                if indexPath.row < daysWeather.time.count {
-                    cell.configure(with: daysWeather.time[indexPath.row], iconCode: daysWeather.icon[indexPath.row], temp: daysWeather.temp[indexPath.row])
+                
+                let daysWeather = self.oneDayWeathers[0].timeWeather
+                if indexPath.row < daysWeather.count {
+                    cell.configure(with: daysWeather[indexPath.row].time, iconCode: daysWeather[indexPath.row].icon, temp: daysWeather[indexPath.row].temp)
                 } else {
                     cell.configure(with: "빈칸", iconCode: "01d", temp: 0)
                 }
@@ -103,7 +109,7 @@ class MainWeatherVC: UIViewController {
                 cell.configure(model: object)
                 
                 return cell
-            
+                
             case .third(_):
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "mapCell", for: indexPath) as! MapCell
                 return cell
@@ -140,9 +146,12 @@ class MainWeatherVC: UIViewController {
     
     //MARK: - UI
     
-    private func configureUI() {
+    private func initialConfigurerUI() {
         view.backgroundColor = UIColor(patternImage: UIImage(named: "background2")!)
         setIndicators()
+    }
+    
+    private func configureUI() {
         configureMainHeaderView()
         configureCollectionView()
     }
@@ -206,19 +215,11 @@ extension MainWeatherVC: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         if indexPath.section == 0 {
-            let weatherViewController = WeatherViewController()
-            
-            print("indexPath.section: \(indexPath.section)")
-            weatherViewController.section = indexPath.section
-            weatherViewController.row = indexPath.row
+            let weatherViewController = WeatherViewController(oneDayWeathers: oneDayWeathers, indexPath: indexPath)
             
             present(weatherViewController, animated: true, completion: nil)
         } else if indexPath.section == 1 {
-            let weatherViewController = WeatherViewController()
-            
-            print("indexPath.section: \(indexPath.section)")
-            weatherViewController.section = indexPath.section
-            weatherViewController.row = indexPath.row
+            let weatherViewController = WeatherViewController(oneDayWeathers: oneDayWeathers, indexPath: indexPath)
             
             present(weatherViewController, animated: true, completion: nil)
         }  else if indexPath.section == 2 {
@@ -262,76 +263,16 @@ extension MainWeatherVC: CLLocationManagerDelegate {
                     self.highLowTemp = HighLowTempSerivce().getHighLowTemp(threeHourList: weatherResponse.list)
                     DispatchQueue.main.async {
                         
-                        var fiveDays: [String] = []
-                        var fiveDaysTemp: [FiveDayTemp] = []
-                        
-                        for forecast in weatherResponse.list {
-                            // 온도 저장.
-                            let tempChange = forecast.main.temp - 273.15
-                            
-                            // 공백 기준으로 문자열 자르기 ex) 2023-10-06 12:00:00 -> 2023-10-06, 12:00:00
-                            let parts = forecast.dt_txt.split(separator: " ")
-                            let day = String(parts[0])
-                            
-                            let timeParts = String(parts[1]).split(separator: ":00")
-                            let time = "\(timeParts[0]) 시"
-                            
-                            // 기존
-                            // 년월일 저장
-                            if !WeatherViewModel.fiveDays.contains(day) {
-                                WeatherViewModel.fiveDays.append(day)
-                                // WeatherViewModel.fiveDaysTemp에 온도를 저장하는 빈 FivedayTemp 구조체 형식을 추가해준다.
-                                WeatherViewModel.fiveDaysTemp.append(FiveDayTemp(time: [], icon: [], temp: []))
-                            }
-                            
-                            // 입력받은 일의 수를 파악하여(fiveDays) 시간대별 온도를 저장할 배열(fiveDaysTemp)에 index값으로 사용함.
-                            if !WeatherViewModel.fiveDaysTemp[WeatherViewModel.fiveDays.count-1].time.contains(time) {
-                                WeatherViewModel.fiveDaysTemp[WeatherViewModel.fiveDays.count-1].time.append(time)
-                                WeatherViewModel.fiveDaysTemp[WeatherViewModel.fiveDays.count-1].icon.append(forecast.weather.first!.icon)
-                                WeatherViewModel.fiveDaysTemp[WeatherViewModel.fiveDays.count-1].temp.append(tempChange)
-                            }
-                           
-                            
-                            // 신규
-                            // 년월일 저장
-                            if !fiveDays.contains(day) {
-                                fiveDays.append(day)
-                                // WeatherViewModel.fiveDaysTemp에 온도를 저장하는 빈 FivedayTemp 구조체 형식을 추가해준다.
-                                fiveDaysTemp.append(FiveDayTemp(time: [], icon: [], temp: []))
-                            }
-                            
-                            // 입력받은 일의 수를 파악하여(fiveDays) 시간대별 온도를 저장할 배열(fiveDaysTemp)에 index값으로 사용함.
-                            if !fiveDaysTemp[fiveDays.count-1].time.contains(time) {
-                                fiveDaysTemp[fiveDays.count-1].time.append(time)
-                                fiveDaysTemp[fiveDays.count-1].icon.append(forecast.weather.first!.icon)
-                                fiveDaysTemp[fiveDays.count-1].temp.append(tempChange)
-                            }
-                        }
-                        
-                        print(weatherResponse.list)
-                        print("WeatherViewModel.fiveDays : \(WeatherViewModel.fiveDays)")
-                        print("WeatherViewModel.fiveDaysTemp : \(WeatherViewModel.fiveDaysTemp)")
-                        
-//                        var viewModel = WeatherViewModel.allDaysWeather
-                        
-//                        [Weather_Group3.FiveDayTemp(time: ["15 시", "18 시", "21 시"], icon: ["01d", "01d", "01d"], temp: [17.600000000000023, 20.379999999999995, 25.590000000000032]),
-                        
-                        for index in 0..<fiveDaysTemp.count {
-                            var timeWeather: [TimeWeather] = []
-                            
-                            for timeIndex in 0..<fiveDaysTemp[index].time.count {
-                                timeWeather.append(TimeWeather(time: fiveDaysTemp[index].time[timeIndex], temp: fiveDaysTemp[index].temp[timeIndex], icon: fiveDaysTemp[index].icon[timeIndex]))
-                            }
-                            
-                            let oneDayWeather: OneDayWeather = OneDayWeather(day: fiveDays[index], highTemp: fiveDaysTemp[index].temp.max()!, lowTemp: fiveDaysTemp[index].temp.min()!, icon: fiveDaysTemp[index].icon.first!, timeWeather: timeWeather)
-                            
-                            self.oneDayWeathers.append(oneDayWeather)
-                        }
-
+                        // 전체 날짜
+                        self.oneDayWeathers = WeatherProvider().getWeathers(dayWeather: weatherResponse)
+                        // Main Header View 오늘 날짜의 정보 표시
+                        self.currentLocationForecast = WeatherProvider().getCityInfo(dayWeather: weatherResponse, oneDayWeather: self.oneDayWeathers[0])
                         
                         // Indicator
                         self.activityIndicator.stopAnimating()
                         self.activityIndicator.removeFromSuperview()
+                        // API 통신 완료 후 UI 및 데이터 입력
+                        self.configureUI()
                         self.configureDataSource()
                         self.applySnapshot()
                     }

@@ -12,11 +12,12 @@ struct WeatherViewModel {
     let tempUnit: String = "℃"
     
     // 시간대별 온도를 저장할 곳
-    static var fiveDays: [String] = []
-    static var fiveDaysTemp: [FiveDayTemp] = []
+//    static var fiveDays: [String] = []
+//    static var fiveDaysTemp: [FiveDayTemp] = []
     
     // 일별 데이터 저장.
     static var allDaysWeather: [OneDayWeather] = []
+    // 1 2 3 4 5
 }
 
 struct FiveDayTemp {
@@ -43,6 +44,15 @@ struct TimeWeather: Equatable {
     let time: String // 시간
     let temp: Double // 기온
     let icon: String // 아이콘
+}
+
+// 현재 위치에 따른 날씨 정보
+struct CurrentLocationForecast {
+    let name: String
+    let temp: Double
+    let highTemp: Double
+    let lowTemp: Double
+    let description: String
 }
 
 struct DayDataModel {
