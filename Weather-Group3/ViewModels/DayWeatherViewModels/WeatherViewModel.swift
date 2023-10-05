@@ -29,16 +29,20 @@ struct FiveDayTemp {
 }
 
 // 날짜 하루기준
-struct OneDayWeather {
+struct OneDayWeather: Equatable, Hashable {
     let day: String // 날짜
     let highTemp: Double // 최고기온
     let lowTemp: Double // 최저기온
     let icon: String // 아이콘
     let timeWeather: [TimeWeather]// [시간별 날씨]
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(day)
+    }
 }
 
 // 시간별 날씨
-struct TimeWeather {
+struct TimeWeather: Equatable {
     let time: String // 시간
     let temp: Double // 기온
     let icon: String // 아이콘

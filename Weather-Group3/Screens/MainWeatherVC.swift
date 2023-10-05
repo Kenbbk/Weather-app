@@ -12,13 +12,21 @@ enum Section {
     case first
     case second
     case third
-    case fourth
+    
+}
+
+enum Row: Hashable {
+    case first(Int)
+    case second(OneDayWeather)
+    case third(Int)
 }
 
 
 class MainWeatherVC: UIViewController {
     //MARK: - Properties
     let locationManager = CLLocationManager()
+    
+    let layoutProvider = MainLayoutProvider()
     
     // 전체 날씨 정보
     var oneDayWeathers: [OneDayWeather] = []
@@ -27,12 +35,10 @@ class MainWeatherVC: UIViewController {
     
     var heightConstraint: NSLayoutConstraint!
     
-    var sections: [Section] = [.first, .second, .third, .fourth]
-    
     let mainHeaderView: MainHeaderView = .init(frame: .zero)
     
     lazy var collectionView: UICollectionView = {
-        let view = UICollectionView(frame: view.bounds, collectionViewLayout: makeLayout())
+        let view = UICollectionView(frame: view.bounds, collectionViewLayout: layoutProvider.getMainLayout())
         view.showsVerticalScrollIndicator = false
         view.register(CellHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: CellHeaderView.identifier)
         
@@ -40,14 +46,13 @@ class MainWeatherVC: UIViewController {
         view.register(DayCollectionViewCell.self, forCellWithReuseIdentifier: DayCollectionViewCell.identifier)
         view.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
         view.register(SecondCell.self, forCellWithReuseIdentifier: SecondCell.identifier)
+        view.register(MapCell.self, forCellWithReuseIdentifier: "mapCell")
         view.backgroundColor = .clear
-        
+        view.delegate = self
         return view
     }()
     
-    var dataSource: UICollectionViewDiffableDataSource<Section, Int>!
-    
-    var header: NSCollectionLayoutBoundarySupplementaryItem!
+    var dataSource: UICollectionViewDiffableDataSource<Section, Row>!
     
     let activityIndicator = UIActivityIndicatorView(style: .large)
     
@@ -55,21 +60,7 @@ class MainWeatherVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Indicator
-        activityIndicator.center = view.center
-        view.addSubview(activityIndicator)
-        activityIndicator.startAnimating()
-        
-        header = supplementaryHeaderItem()
-        view.backgroundColor = UIColor(patternImage: UIImage(named: "background2")!)
-//        configureUI()
-        //        configureDataSource()
-        //        applySnapshot()
-        
-        collectionView.delegate = self
-        collectionView.register(MapCell.self, forCellWithReuseIdentifier: "mapCell")
-        
-        // 현재 위치의 날씨정보 얻어오기
+        configureUI()
         setLocationManager()
     }
     
@@ -88,10 +79,10 @@ class MainWeatherVC: UIViewController {
         mainHeaderView.setCurrentLocation(currentLocationForecast: currentLocationForecast!)
         
         dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
-            if indexPath.section == 0 {
+            switch itemIdentifier {
+            case .first(_):
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TodayCollectionViewCell.identifier, for: indexPath) as! TodayCollectionViewCell
-                // 현재 날짜만 표시
-                // test 231003
+            
                 let daysWeather = WeatherViewModel.fiveDaysTemp[0]
                 if indexPath.row < daysWeather.time.count {
                     cell.configure(with: daysWeather.time[indexPath.row], iconCode: daysWeather.icon[indexPath.row], temp: daysWeather.temp[indexPath.row])
@@ -123,16 +114,16 @@ class MainWeatherVC: UIViewController {
                 if let mapCell = collectionView.dequeueReusableCell(withReuseIdentifier: "mapCell", for: indexPath) as? MapCell {
                     return mapCell
                 }
-            } else {
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-                cell.backgroundColor = .yellow
-                
+                return cell
+            case .second(let object):
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SecondCell.identifier, for: indexPath) as! SecondCell
+                cell.configure(model: object)
+                return cell
+            
+            case .third(_):
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "mapCell", for: indexPath) as! MapCell
                 return cell
             }
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-            cell.backgroundColor = .yellow
-            
-            return cell
         })
         
         
@@ -141,37 +132,44 @@ class MainWeatherVC: UIViewController {
             guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: CellHeaderView.identifier, for: indexPath) as? CellHeaderView else {
                 fatalError("Could not dequeue sectionHeader: \(CellHeaderView.identifier)")
             }
-            sectionHeader.delegate = self
+//            sectionHeader.delegate = self
             sectionHeader.sectionIndex = indexPath.section
             return sectionHeader
         }
     }
     
     private func applySnapshot() {
-        var snapshot = NSDiffableDataSourceSnapshot<Section, Int>()
-        snapshot.appendSections(sections)
-        snapshot.appendItems([1,2,3,4,5,6,7], toSection: .first)
-        snapshot.appendItems([8,9,10,11,12,13,14,15], toSection: .second)
-        snapshot.appendItems([16], toSection: .third)
-        snapshot.appendItems([17,18,19,20,21,22,23,24], toSection: .fourth)
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Row>()
+        snapshot.appendSections(layoutProvider.sections)
+        snapshot.appendItems([.first(1),.first(2), .first(3), .first(4), .first(5), .first(6), .first(7),], toSection: .first)
+        let a = oneDayWeathers.map {
+            Row.second($0)
+        }
+        snapshot.appendItems(a, toSection: .second)
+        snapshot.appendItems([.third(8)], toSection: .third)
+//        snapshot.appendItems([17,18,19,20,21,22,23,24,], toSection: .fourth)
         
         dataSource.apply(snapshot)
     }
     
-    private func supplementaryHeaderItem() -> NSCollectionLayoutBoundarySupplementaryItem {
-        let header = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(20)), elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
-        
-        return header
-    }
+    
     
     //MARK: - UI
     
     private func configureUI() {
+        view.backgroundColor = UIColor(patternImage: UIImage(named: "background2")!)
+        setIndicators()
         configureMainHeaderView()
         configureCollectionView()
     }
     
-    func configureMainHeaderView() {
+    private func setIndicators() {
+        activityIndicator.center = view.center
+        view.addSubview(activityIndicator)
+        activityIndicator.startAnimating()
+    }
+    
+    private func configureMainHeaderView() {
         view.addSubview(mainHeaderView)
         
         mainHeaderView.translatesAutoresizingMaskIntoConstraints = false
@@ -184,7 +182,7 @@ class MainWeatherVC: UIViewController {
         ])
     }
     
-    func configureCollectionView() {
+    private func configureCollectionView() {
         view.addSubview(collectionView)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -194,110 +192,6 @@ class MainWeatherVC: UIViewController {
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
-    
-    private func makeLayout() -> UICollectionViewCompositionalLayout {
-        let layout = UICollectionViewCompositionalLayout { [ weak self ] sectionIndex, layoutEnviro in
-            guard let self else { fatalError()}
-            
-            let section = self.sections[sectionIndex]
-            switch section {
-            case .first:
-                
-                let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1)))
-                //                                item.contentInsets = .init(top: 1, leading: 5, bottom: 10, trailing: 5)
-                
-                let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .absolute(70), heightDimension: .estimated(95)), subitems: [item])
-                
-                
-                let section = NSCollectionLayoutSection(group: group)
-                //                section.contentInsets = .init(top: 0, leading: 15, bottom: 0, trailing: 15)
-                section.orthogonalScrollingBehavior = .continuous
-                //                section.interGroupSpacing = 10
-                //                let header = supplementaryHeaderItem()
-                
-                section.boundarySupplementaryItems = [header]
-                section.contentInsets = .init(top: 0, leading: 0, bottom: 10, trailing: 0)
-                
-                
-                let backgroundItem = NSCollectionLayoutDecorationItem.background(elementKind: BackgroundReusableView.identifier)
-                
-                
-                
-                section.decorationItems = [backgroundItem]
-                return section
-                
-            case .second:
-                
-                let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1)))
-                //                item.contentInsets = .init(top: 3, leading: 3, bottom: 3, trailing: 3)
-                
-                let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .absolute(50)), repeatingSubitem: item, count: 1)
-                //                group.contentInsets = .init(top: 0, leading: 0, bottom: 5, trailing: 0)
-                
-                let section = NSCollectionLayoutSection(group: group)
-                
-                section.boundarySupplementaryItems = [supplementaryHeaderItem()]
-                
-                let backgroundItem = NSCollectionLayoutDecorationItem.background(elementKind: BackgroundReusableView.identifier)
-                
-                
-                
-                section.decorationItems = [backgroundItem]
-                
-                return section
-                
-                
-                
-            case .third:
-                let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1)))
-                //                item.contentInsets = .init(top: 10, leading: 10, bottom: 10, trailing: 10)
-                
-                let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(0.4)), repeatingSubitem: item, count: 1)
-                
-                let section = NSCollectionLayoutSection(group: group)
-                
-                
-                
-                section.boundarySupplementaryItems = [supplementaryHeaderItem()]
-                
-                let backgroundItem = NSCollectionLayoutDecorationItem.background(elementKind: BackgroundReusableView.identifier)
-                
-                backgroundItem.contentInsets = section.contentInsets
-                
-                section.decorationItems = [backgroundItem]
-                
-                return section
-                
-            case .fourth:
-                let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1)))
-                item.contentInsets = .init(top: 3, leading: 7.5, bottom: 3, trailing: 7.5)
-                
-                let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(0.5), heightDimension: .absolute(180)), repeatingSubitem: item, count: 2)
-                group.contentInsets = .init(top: 0, leading: 0, bottom: 5, trailing: 0)
-                let section = NSCollectionLayoutSection(group: group)
-                
-                let backgroundItem = NSCollectionLayoutDecorationItem.background(elementKind: BackgroundReusableView.identifier)
-                
-                backgroundItem.contentInsets = section.contentInsets
-                
-                section.decorationItems = [backgroundItem]
-                return section
-            }
-            
-            
-        }
-        
-        layout.register(BackgroundReusableView.self,
-                        forDecorationViewOfKind: BackgroundReusableView.identifier)
-        let config = UICollectionViewCompositionalLayoutConfiguration()
-        config.interSectionSpacing = 10
-        
-        layout.configuration = config
-        
-        return layout
-        
-    }
-    
 }
 
 extension MainWeatherVC: UIScrollViewDelegate {
@@ -318,12 +212,8 @@ extension MainWeatherVC: UIScrollViewDelegate {
             } else {
                 scrollView.contentOffset.y = 0
             }
-            
         }
-        
     }
-    
-    
 }
 
 
@@ -414,6 +304,12 @@ extension MainWeatherVC: CLLocationManagerDelegate {
                                 WeatherViewModel.fiveDaysTemp[WeatherViewModel.fiveDays.count-1].icon.append(forecast.weather.first!.icon)
                                 WeatherViewModel.fiveDaysTemp[WeatherViewModel.fiveDays.count-1].temp.append(tempChange)
                             }
+                            class weatherProvider {
+                                func getWeathers(weatherviewmodel: WeatherViewModel) -> [OneDayWeather] {
+                                    
+                                }
+                            }
+                            
                             
                             // 신규
                             // 년월일 저장
@@ -453,10 +349,9 @@ extension MainWeatherVC: CLLocationManagerDelegate {
                             
                             let oneDayWeather: OneDayWeather = OneDayWeather(day: fiveDays[index], highTemp: fiveDaysTemp[index].temp.max()!, lowTemp: fiveDaysTemp[index].temp.min()!, icon: fiveDaysTemp[index].icon.first!, timeWeather: timeWeather)
                             
-                            WeatherViewModel.allDaysWeather.append(oneDayWeather)
+                            self.oneDayWeathers.append(oneDayWeather)
                         }
-                        
-                        print("viewModel: \(WeatherViewModel.allDaysWeather)")
+
                         
                         // Indicator
                         self.activityIndicator.stopAnimating()
@@ -473,12 +368,12 @@ extension MainWeatherVC: CLLocationManagerDelegate {
     }
 }
 
-extension MainWeatherVC: CellHeaderViewDelegate {
-    func cellHeaderViewTapped(sectionIndex: Int) {
-        print(sectionIndex)
-    }
-    
-    
-}
+//extension MainWeatherVC: CellHeaderViewDelegate {
+//    func cellHeaderViewTapped(sectionIndex: Int) {
+//        print(sectionIndex)
+//    }
+//    
+//    
+//}
 
 
