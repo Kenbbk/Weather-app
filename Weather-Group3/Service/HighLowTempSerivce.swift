@@ -10,7 +10,7 @@ import Foundation
 struct HighLowTempSerivce {
     
     func getHighLowTemp(threeHourList: [WeatherThreeHour]) -> (Double, Double) {
-        let temperatrureList = threeHourList.map { $0.main.temp - 273.1 }
+        let temperatrureList = threeHourList.map { $0.main.temp - 273.15 }
         return (temperatrureList.minAndMax()!)
     }
 }

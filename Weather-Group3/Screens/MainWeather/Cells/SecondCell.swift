@@ -28,6 +28,7 @@ class SecondCell: UICollectionViewCell {
     
     let imageView: UIImageView = {
         let iv = UIImageView()
+        iv.contentMode = .scaleAspectFill
         iv.image = UIImage(systemName: "house")
         iv.tintColor = .white
         return iv
@@ -64,7 +65,8 @@ class SecondCell: UICollectionViewCell {
     
     func configure(model: OneDayWeather) {
         dayLabel.text = model.day
-        imageView.image = UIImage(systemName: model.icon)
+        TodayCollectionViewCell().displayWeatherIcon(iconCode: model.icon, imageView: self.imageView)
+//        imageView.image = UIImage(systemName: model.icon)
         lowLabel.text = "\(Int(model.lowTemp))"
         highLabel.text = "\(Int(model.highTemp))"
         
@@ -74,7 +76,6 @@ class SecondCell: UICollectionViewCell {
     
     
     //MARK: - UI
-    
     private func configureUI() {
         configureLiner()
         configureDayLabel()
@@ -113,9 +114,9 @@ class SecondCell: UICollectionViewCell {
         
         NSLayoutConstraint.activate([
             imageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            imageView.trailingAnchor.constraint(equalTo: centerXAnchor, constant: -30),
-            imageView.widthAnchor.constraint(equalToConstant: 25),
-            imageView.heightAnchor.constraint(equalToConstant: 25)
+            imageView.trailingAnchor.constraint(equalTo: centerXAnchor, constant: 0),
+            imageView.widthAnchor.constraint(equalToConstant: 50),
+            imageView.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
     

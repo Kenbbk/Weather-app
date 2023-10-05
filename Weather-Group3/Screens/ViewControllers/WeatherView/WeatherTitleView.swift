@@ -14,14 +14,21 @@ protocol WeatherTitleViewDelegate: AnyObject {
 
 class WeatherTitleView: UIView {
     
-    var viewTitle: String = "View Title"
     var labelSize: CGFloat = 20
     var imageSize: CGFloat = 20
     
     // MARK: - Properties
     lazy var userNameLabel: UILabel = {
         let label = UILabel()
-        label.text = viewTitle
+        
+        // 이미지를 포함한 NSAttributedString을 생성합니다.
+        let imageAttachment = NSTextAttachment()
+        imageAttachment.image = UIImage(systemName: "thermometer.low") // 이미지 이름을 넣어주세요
+
+        let attributedString = NSMutableAttributedString(attachment: imageAttachment)
+        attributedString.append(NSAttributedString(string: " 기온"))
+        
+        label.attributedText = attributedString
         label.font = UIFont.boldSystemFont(ofSize: labelSize)
         label.textAlignment = .center
         
