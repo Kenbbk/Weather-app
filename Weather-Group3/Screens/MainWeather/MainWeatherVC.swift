@@ -105,6 +105,13 @@ class MainWeatherVC: UIViewController {
                 
                 let tuple = self.tempRangeService.getTempRange(min: self.highLowTemp.0, max: self.highLowTemp.1, currentMin: object.lowTemp, currentMax: object.highTemp)
                 
+                print("start")
+                print(self.highLowTemp.0, "highLowTemp.0")
+                print(self.highLowTemp.1, "highLowTemp.1")
+                print(object, "!!!!")
+                print(tuple, "0000")
+                print("end")
+                
                 cell.colorViews(min: tuple.0, max: tuple.1)
                 cell.colorBar.colors = self.colorService.getColors(min: 20, max: 32)
                 cell.configure(model: object)

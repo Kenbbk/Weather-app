@@ -28,7 +28,7 @@ class SecondCell: UICollectionViewCell {
     
     let imageView: UIImageView = {
         let iv = UIImageView()
-        
+        iv.contentMode = .scaleAspectFill
         iv.image = UIImage(systemName: "house")
         iv.tintColor = .black
         return iv
@@ -64,18 +64,19 @@ class SecondCell: UICollectionViewCell {
     }
     
     func configure(model: OneDayWeather) {
-        ImageLoader().loadImage(iconCode: model.icon) { result in
-            switch result {
-            case .failure(let error):
-                print(error)
-            case .success(let image):
-                DispatchQueue.main.asyncAndWait {
-                    self.imageView.image = image
-                }
-            }
-        }
+//        ImageLoader().loadImage(iconCode: model.icon) { result in
+//            switch result {
+//            case .failure(let error):
+//                print(error)
+//            case .success(let image):
+//                DispatchQueue.main.asyncAndWait {
+//                    self.imageView.image = image
+//                }
+//            }
+//        }
         
         dayLabel.text = model.day
+        TodayCollectionViewCell().displayWeatherIcon(iconCode: model.icon, imageView: self.imageView)
         lowLabel.text = "\(Int(model.lowTemp))"
         highLabel.text = "\(Int(model.highTemp))"
         
@@ -83,7 +84,6 @@ class SecondCell: UICollectionViewCell {
     
     
     //MARK: - UI
-    
     private func configureUI() {
         configureLiner()
         configureDayLabel()
@@ -122,9 +122,9 @@ class SecondCell: UICollectionViewCell {
         
         NSLayoutConstraint.activate([
             imageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            imageView.trailingAnchor.constraint(equalTo: centerXAnchor, constant: -30),
-            imageView.widthAnchor.constraint(equalToConstant: 25),
-            imageView.heightAnchor.constraint(equalToConstant: 25)
+            imageView.trailingAnchor.constraint(equalTo: centerXAnchor, constant: 0),
+            imageView.widthAnchor.constraint(equalToConstant: 50),
+            imageView.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
     
