@@ -12,6 +12,7 @@ enum Section {
     case first
     case second
     case third
+    case fourth
     
 }
 
@@ -19,6 +20,7 @@ enum Row: Hashable {
     case first(Int)
     case second(OneDayWeather)
     case third(Int)
+    case fourth(Int)
 }
 
 
@@ -26,13 +28,19 @@ class MainWeatherVC: UIViewController {
     //MARK: - Properties
     let locationManager = CLLocationManager()
     
+    let tempRangeService = TempRangeService()
+    
     let layoutProvider = MainLayoutProvider()
+    
+    let colorService = ColorService()
     
     var oneDayWeathers: [OneDayWeather] = []
     
     var heightConstraint: NSLayoutConstraint!
     
     let mainHeaderView: MainHeaderView = .init(frame: .zero)
+    
+    var highLowTemp: (Double, Double) = (0,0)
     
     lazy var collectionView: UICollectionView = {
         let view = UICollectionView(frame: view.bounds, collectionViewLayout: layoutProvider.getMainLayout())
@@ -59,6 +67,7 @@ class MainWeatherVC: UIViewController {
         
         configureUI()
         setLocationManager()
+        
     }
     
     
@@ -86,7 +95,13 @@ class MainWeatherVC: UIViewController {
                 return cell
             case .second(let object):
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SecondCell.identifier, for: indexPath) as! SecondCell
+                
+                let tuple = self.tempRangeService.getTempRange(min: self.highLowTemp.0, max: self.highLowTemp.1, currentMin: object.lowTemp, currentMax: object.highTemp)
+                
+                cell.colorViews(min: tuple.0, max: tuple.1)
+                cell.colorBar.colors = self.colorService.getColors(min: 20, max: 32)
                 cell.configure(model: object)
+                
                 return cell
             
             case .third(_):
@@ -116,7 +131,7 @@ class MainWeatherVC: UIViewController {
         }
         snapshot.appendItems(a, toSection: .second)
         snapshot.appendItems([.third(8)], toSection: .third)
-//        snapshot.appendItems([17,18,19,20,21,22,23,24,], toSection: .fourth)
+        snapshot.appendItems([17,18,19,20,21,22,23,24,], toSection: .fourth)
         
         dataSource.apply(snapshot)
     }
@@ -243,6 +258,8 @@ extension MainWeatherVC: CLLocationManagerDelegate {
             WeatherAPIService().getLocalWeather(url: urlString) { result in
                 switch result {
                 case .success(let weatherResponse):
+                    
+                    self.highLowTemp = HighLowTempSerivce().getHighLowTemp(threeHourList: weatherResponse.list)
                     DispatchQueue.main.async {
                         
                         var fiveDays: [String] = []

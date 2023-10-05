@@ -30,8 +30,7 @@ struct ColorService {
         
         let minColorNumber = getColorNumber(temp: min)
         let maxColorNumber = getColorNumber(temp: max)
-        print(minColorNumber)
-        print(maxColorNumber)
+    
         if minColorNumber == maxColorNumber {
             result.append(colors[maxColorNumber].cgColor)
             result.append(colors[minColorNumber].cgColor)
@@ -48,27 +47,27 @@ struct ColorService {
     private func getColorNumber(temp: Double) -> Int {
         switch temp {
         case 35...:
-            8
+            return 8
         case 28...:
-            7
+            return 7
         case 21...:
-            6
+            return 6
         case 14...:
-            5
+            return 5
         case 7...:
-            4
+            return 4
         case 0...:
-            3
+            return 3
         case (-7)...:
-            2
+            return 2
         case (-14)...:
-            1
+            return 1
         case (-21)...:
-            0
+            return 0
         default:
-            0
+            return 0
             
         }
-        return 0
+        
     }
 }

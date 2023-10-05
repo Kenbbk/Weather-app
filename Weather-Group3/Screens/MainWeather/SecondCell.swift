@@ -58,6 +58,23 @@ class SecondCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func colorViews(min: Double, max: Double) {
+        colorBar.setConstraint(constraint: (min, max))
+    }
+    
+    func configure(model: OneDayWeather) {
+        dayLabel.text = model.day
+        imageView.image = UIImage(systemName: model.icon)
+        lowLabel.text = "\(Int(model.lowTemp))"
+        highLabel.text = "\(Int(model.highTemp))"
+        
+        
+        
+    }
+    
+    
+    //MARK: - UI
+    
     private func configureUI() {
         configureLiner()
         configureDayLabel()
@@ -78,12 +95,6 @@ class SecondCell: UICollectionViewCell {
             liner.heightAnchor.constraint(equalToConstant: 0.2)
         ])
     }
-    
-    func colorViews(min: Double, max: Double) {
-        colorBar.setConstraint(constraint: (min, max))
-    }
-    
-    
     
     private func configureDayLabel() {
         
@@ -138,12 +149,6 @@ class SecondCell: UICollectionViewCell {
         ])
     }
     
-    func configure(model: OneDayWeather) {
-        dayLabel.text = model.day
-        imageView.image = UIImage(systemName: model.icon)
-        lowLabel.text = "\(model.lowTemp)"
-        highLabel.text = "\(model.highTemp)"
-        
-    }
+   
     
 }

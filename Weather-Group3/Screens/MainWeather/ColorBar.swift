@@ -42,7 +42,7 @@ class ColorBar: UIView {
         gradientLayer.startPoint = CGPoint(x: 0, y: 1)
         gradientLayer.endPoint = CGPoint(x: 1, y: 1)
         gradientLayer.frame = bounds
-        print(colors.count, "@@@@")
+        
         gradientLayer.colors = colors
         layer.addSublayer(gradientLayer)
         configureLeftView()
@@ -50,7 +50,14 @@ class ColorBar: UIView {
         
     }
     
-   
+    func setConstraint(constraint: (Double, Double)) {
+        
+        firstDouble = constraint.0
+        secondDouble = constraint.1
+
+    }
+    
+    //MARK: - UI
     
     private func configureLeftView() {
         addSubview(leftView)
@@ -84,12 +91,7 @@ class ColorBar: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setConstraint(constraint: (Double, Double)) {
-        
-        firstDouble = constraint.0
-        secondDouble = constraint.1
-
-    }
+    
     
 }
 

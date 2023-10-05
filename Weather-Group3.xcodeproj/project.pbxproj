@@ -19,6 +19,8 @@
 		D66A9CE52ACC310600A04460 /* ColorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D66A9CE42ACC310600A04460 /* ColorService.swift */; };
 		D66A9CE92ACD3BC800A04460 /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D66A9CE82ACD3BC800A04460 /* WeatherService.swift */; };
 		D66A9D0D2ACE4D3D00A04460 /* MainLayoutProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D66A9D0C2ACE4D3D00A04460 /* MainLayoutProvider.swift */; };
+		D66A9D102ACE65FF00A04460 /* HighLowTempSerivce.swift in Sources */ = {isa = PBXBuildFile; fileRef = D66A9D0F2ACE65FF00A04460 /* HighLowTempSerivce.swift */; };
+		D66A9D142ACE7C5900A04460 /* FourthCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D66A9D132ACE7C5800A04460 /* FourthCell.swift */; };
 		D6B1E3752AC404E00082934A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6B1E3742AC404E00082934A /* AppDelegate.swift */; };
 		D6B1E3772AC404E00082934A /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6B1E3762AC404E00082934A /* SceneDelegate.swift */; };
 		D6B1E37E2AC404E20082934A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D6B1E37D2AC404E20082934A /* Assets.xcassets */; };
@@ -54,6 +56,8 @@
 		D66A9CE42ACC310600A04460 /* ColorService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorService.swift; sourceTree = "<group>"; };
 		D66A9CE82ACD3BC800A04460 /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
 		D66A9D0C2ACE4D3D00A04460 /* MainLayoutProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainLayoutProvider.swift; sourceTree = "<group>"; };
+		D66A9D0F2ACE65FF00A04460 /* HighLowTempSerivce.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighLowTempSerivce.swift; sourceTree = "<group>"; };
+		D66A9D132ACE7C5800A04460 /* FourthCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FourthCell.swift; sourceTree = "<group>"; };
 		D6B1E3712AC404E00082934A /* Weather-Group3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Weather-Group3.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D6B1E3742AC404E00082934A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D6B1E3762AC404E00082934A /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -98,10 +102,47 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		D66A9D0E2ACE65DC00A04460 /* Service */ = {
+			isa = PBXGroup;
+			children = (
+				D66A9D0F2ACE65FF00A04460 /* HighLowTempSerivce.swift */,
+				D66A9CE42ACC310600A04460 /* ColorService.swift */,
+				D66A9CE82ACD3BC800A04460 /* WeatherService.swift */,
+				D667CE2A2AC84DC100316F24 /* TempRangeSerivce.swift */,
+				D66A9CE22ACC27B500A04460 /* SlopeCalculatorService.swift */,
+				D66A9D0C2ACE4D3D00A04460 /* MainLayoutProvider.swift */,
+			);
+			path = Service;
+			sourceTree = "<group>";
+		};
+		D66A9D112ACE6ADB00A04460 /* MainWeather */ = {
+			isa = PBXGroup;
+			children = (
+				D6B1E3902AC40A040082934A /* BackgroundReusableView.swift */,
+				D6B1E38E2AC409D60082934A /* CellHeaderView.swift */,
+				D6B1E38A2AC4057F0082934A /* MainWeatherVC.swift */,
+				D6B1E38C2AC409AF0082934A /* MainHeaderView.swift */,
+				D667CE242AC5C14300316F24 /* CustomCell.swift */,
+				D667CE262AC6DF6300316F24 /* SecondCell.swift */,
+				D667CE282AC6E93E00316F24 /* ColorBar.swift */,
+				D66A9D132ACE7C5800A04460 /* FourthCell.swift */,
+			);
+			path = MainWeather;
+			sourceTree = "<group>";
+		};
+		D66A9D122ACE6B0C00A04460 /* Map */ = {
+			isa = PBXGroup;
+			children = (
+				30DDC6742ACCE49000F00D39 /* MapCell.swift */,
+				30DDC6782ACCE49900F00D39 /* MapViewController.swift */,
+			);
+			path = Map;
+			sourceTree = "<group>";
+		};
 		D6B1E3682AC404E00082934A = {
 			isa = PBXGroup;
 			children = (
-				D66A9D0C2ACE4D3D00A04460 /* MainLayoutProvider.swift */,
+				D66A9D0E2ACE65DC00A04460 /* Service */,
 				D6B1E3732AC404E00082934A /* Weather-Group3 */,
 				D6B1E3722AC404E00082934A /* Products */,
 				F6801CFADBF6A53BC2651369 /* Pods */,
@@ -129,20 +170,8 @@
 				D6B1E37D2AC404E20082934A /* Assets.xcassets */,
 				D6B1E37F2AC404E20082934A /* LaunchScreen.storyboard */,
 				D6B1E3822AC404E20082934A /* Info.plist */,
-				D6B1E38C2AC409AF0082934A /* MainHeaderView.swift */,
-				D6B1E38E2AC409D60082934A /* CellHeaderView.swift */,
-				D6B1E3902AC40A040082934A /* BackgroundReusableView.swift */,
-				30DDC6782ACCE49900F00D39 /* MapViewController.swift */,
 				30DDC6762ACCE49500F00D39 /* CustomAnnotation.swift */,
-				30DDC6742ACCE49000F00D39 /* MapCell.swift */,
 				EB2D519F2AC44D89007859A8 /* KeyList.plist */,
-				D667CE242AC5C14300316F24 /* CustomCell.swift */,
-				D667CE262AC6DF6300316F24 /* SecondCell.swift */,
-				D667CE282AC6E93E00316F24 /* ColorBar.swift */,
-				D667CE2A2AC84DC100316F24 /* TempRangeSerivce.swift */,
-				D66A9CE22ACC27B500A04460 /* SlopeCalculatorService.swift */,
-				D66A9CE42ACC310600A04460 /* ColorService.swift */,
-				D66A9CE82ACD3BC800A04460 /* WeatherService.swift */,
 			);
 			path = "Weather-Group3";
 			sourceTree = "<group>";
@@ -150,7 +179,8 @@
 		D6B1E3882AC4054F0082934A /* Screens */ = {
 			isa = PBXGroup;
 			children = (
-				D6B1E38A2AC4057F0082934A /* MainWeatherVC.swift */,
+				D66A9D122ACE6B0C00A04460 /* Map */,
+				D66A9D112ACE6ADB00A04460 /* MainWeather */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -362,9 +392,11 @@
 				EB2D51902AC44375007859A8 /* DataScrollView.swift in Sources */,
 				D66A9CE52ACC310600A04460 /* ColorService.swift in Sources */,
 				D6B1E38F2AC409D60082934A /* CellHeaderView.swift in Sources */,
+				D66A9D102ACE65FF00A04460 /* HighLowTempSerivce.swift in Sources */,
 				D66A9CE32ACC27B500A04460 /* SlopeCalculatorService.swift in Sources */,
 				D667CE2B2AC84DC100316F24 /* TempRangeSerivce.swift in Sources */,
 				D6B1E38B2AC4057F0082934A /* MainWeatherVC.swift in Sources */,
+				D66A9D142ACE7C5900A04460 /* FourthCell.swift in Sources */,
 				30DDC6792ACCE49900F00D39 /* MapViewController.swift in Sources */,
 				D6B1E3752AC404E00082934A /* AppDelegate.swift in Sources */,
 				30DDC6752ACCE49000F00D39 /* MapCell.swift in Sources */,
