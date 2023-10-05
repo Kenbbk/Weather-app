@@ -16,7 +16,7 @@ class WeatherProvider {
         
         for forecast in dayWeather.list {
             // 온도 저장.
-            let tempChange = forecast.main.temp - 273.15
+            let tempChange = forecast.main.temp // - 273.15
             
             // 공백 기준으로 문자열 자르기 ex) 2023-10-06 12:00:00 -> 2023-10-06, 12:00:00
             let parts = forecast.dt_txt.split(separator: " ")

@@ -273,7 +273,7 @@ extension MainWeatherVC: CLLocationManagerDelegate {
             
             let baseURL = "https://api.openweathermap.org/data/2.5/forecast"
             let apiKey = WeatherAPIService().apiKey
-            let urlString = "\(baseURL)?lat=\(latitude)&lon=\(longitude)&appid=\(apiKey)"
+            let urlString = "\(baseURL)?lat=\(latitude)&lon=\(longitude)&units=metric&appid=\(apiKey)"
             
             WeatherAPIService().getLocalWeather(url: urlString) { result in
                 switch result {
@@ -288,11 +288,6 @@ extension MainWeatherVC: CLLocationManagerDelegate {
                     self.currentLocationForecast = WeatherProvider().getCityInfo(dayWeather: weatherResponse, oneDayWeather: self.oneDayWeathers[0])
                     
                     DispatchQueue.main.async {
-                        
-                        // 전체 날짜
-                        
-                        // Main Header View 오늘 날짜의 정보 표시
-                        
                         
                         // Indicator
                         self.stopIndicator()
