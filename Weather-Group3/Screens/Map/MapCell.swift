@@ -5,6 +5,7 @@
 //  Created by SR on 2023/10/02.
 //
 
+import CoreLocation
 import MapKit
 import UIKit
 
@@ -12,16 +13,25 @@ class MapCell: UICollectionViewCell {
     let identifier = "mapCell"
     let mapView = MKMapView()
 
+    let manager = CLLocationManager()
+
+    // 위치 디폴트: 서울
+    var currentLatitude: Double = 37.5729
+    var currentLongitude: Double = 126.9794
+
+    var temperature: Int = 0 // 온도
+    var pressure: Int = 0 // 기압
+    var humidity: Int = 0 // 습도
+
     var pinTintColor: UIColor = .systemBackground
-    var temperature: Double = 0.0
     var annotationText: String = "24℃"
     var systemImageName: String = "thermometer.low"
 
     override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
-        mapView.delegate = self
-        addAnnotation(pinTintColor: pinTintColor, annotationText: annotationText, systemImageName: systemImageName)
+        getCurrentLocation()
+        showLocation(latitude: currentLatitude, longitude: currentLongitude, pinTintColor: pinTintColor, annotationText: annotationText, systemImageName: systemImageName)
     }
 
     @available(*, unavailable)
@@ -32,6 +42,7 @@ class MapCell: UICollectionViewCell {
 
 extension MapCell {
     private func setup() {
+        mapView.delegate = self
         mapView.mapType = .hybrid
 
         addSubview(mapView)
@@ -49,19 +60,7 @@ extension MapCell {
 
     private func addAnnotation(pinTintColor: UIColor, annotationText: String, systemImageName: String) {
         let seoulCoordinate = CLLocationCoordinate2D(latitude: 37.5729, longitude: 126.9794)
-//        if weatherResponse.list.count > 3 {
-//            let noonWeather = weatherResponse.list[3]
-//            let temperature = noonWeather.main.temp
-//            let pressure = noonWeather.main.pressure
-//            let humidity = noonWeather.main.humidity
-//
-//            print("온도: \(temperature)°C")
-//            print("기압: \(pressure) hPa")
-//            print("습도: \(humidity)%")
-//        } else {
-//            print("낮 12시 데이터를 찾을 수 없습니다.")
-//        }
-        
+
         let temperatureAnnotationText = "\(temperature)℃"
         let annotation = CustomAnnotation(
             pinTintColor: .systemBackground,
@@ -77,3 +76,61 @@ extension MapCell {
     }
 }
 
+extension MapCell: CLLocationManagerDelegate {
+    private func getCurrentLocation() {
+        manager.desiredAccuracy = kCLLocationAccuracyBest
+        manager.delegate = self
+        manager.requestWhenInUseAuthorization()
+        manager.startUpdatingLocation()
+    }
+
+    func showLocation(latitude: Double, longitude: Double, pinTintColor: UIColor, annotationText: String, systemImageName: String) {
+        let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+        let span = MKCoordinateSpan(latitudeDelta: 5.0, longitudeDelta: 5.0)
+        let region = MKCoordinateRegion(center: coordinate, span: span)
+        mapView.setRegion(region, animated: true)
+        setCustomPin(pinTintColor: pinTintColor, annotationText: annotationText, systemImageName: systemImageName)
+    }
+
+    func setCustomPin(pinTintColor: UIColor, annotationText: String, systemImageName: String) {
+        let customPin = CustomAnnotation(pinTintColor: pinTintColor,
+                                         annotationText: annotationText,
+                                         systemImageName: systemImageName)
+
+        customPin.coordinate = CLLocationCoordinate2D(latitude: currentLatitude, longitude: currentLongitude)
+        mapView.addAnnotation(customPin)
+    }
+
+    func getWeatherInfo(currentLatitude: Double, currentLongitude: Double) {
+        let baseURL = "https://api.openweathermap.org/data/2.5/forecast"
+        let apiKey = WeatherAPIService().apiKey
+        let urlString = "\(baseURL)?lat=\(currentLatitude)&lon=\(currentLongitude)&appid=\(apiKey)"
+
+        WeatherAPIService().getLocalWeather(url: urlString) { result in
+            switch result {
+            case .success(let weatherResponse):
+                DispatchQueue.main.async {
+                    if let firstWeather = weatherResponse.list.first {
+                        let tempChange = Int(firstWeather.main.temp - 273.15)
+                        self.temperature = tempChange
+                        self.pressure = firstWeather.main.pressure
+                        self.humidity = firstWeather.main.humidity
+                    }
+                    print("#mapVC: \(weatherResponse.list)")
+                }
+            case .failure:
+                print("실패: error")
+            }
+        }
+        showLocation(latitude: currentLatitude, longitude: currentLongitude, pinTintColor: pinTintColor, annotationText: annotationText, systemImageName: systemImageName)
+    }
+
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let location = locations.first {
+            currentLatitude = location.coordinate.latitude
+            currentLongitude = location.coordinate.longitude
+            manager.stopUpdatingLocation()
+            getWeatherInfo(currentLatitude: currentLatitude, currentLongitude: currentLongitude)
+        }
+    }
+}
