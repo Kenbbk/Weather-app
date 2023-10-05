@@ -142,5 +142,24 @@ class MainHeaderView: UIView {
         ])
     }
     
+    func setCurrentLocation(currentLocationForecast: CurrentLocationForecast) {
+        let city: String = currentLocationForecast.name
+        let currentTemp: String = formatTemp(temp: currentLocationForecast.temp)
+        let highTemp: String = formatTemp(temp: currentLocationForecast.highTemp)
+        let lowTemp: String = formatTemp(temp: currentLocationForecast.lowTemp)
+        let description: String = currentLocationForecast.description
+        
+        cityLabel.text = city
+        hiddenTemperatureLabel.text = "\(currentTemp) | \(description)"
+        temperatureLabel.text = "\(currentTemp)º"
+        descriptionLabelLabel.text = description
+        maxMinLabel.text = "H:\(highTemp)º L:\(lowTemp)º"
+    }
+    
+    func formatTemp(temp: Double) -> String {
+        let formattedTemp = String(format: "%.1f", temp)
+        
+        return formattedTemp
+    }
 }
 

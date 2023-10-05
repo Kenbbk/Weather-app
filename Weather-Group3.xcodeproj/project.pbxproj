@@ -38,6 +38,7 @@
 		EB2D519E2AC4442D007859A8 /* WeatherViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB2D519D2AC4442D007859A8 /* WeatherViewController.swift */; };
 		EB2D51A02AC44D89007859A8 /* KeyList.plist in Resources */ = {isa = PBXBuildFile; fileRef = EB2D519F2AC44D89007859A8 /* KeyList.plist */; };
 		EB2D51A22AC45100007859A8 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB2D51A12AC45100007859A8 /* LocationManager.swift */; };
+		EB3B82F42ACE615500B80FAE /* WeatherProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB3B82F32ACE615500B80FAE /* WeatherProvider.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -75,6 +76,7 @@
 		EB2D519D2AC4442D007859A8 /* WeatherViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherViewController.swift; sourceTree = "<group>"; };
 		EB2D519F2AC44D89007859A8 /* KeyList.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = KeyList.plist; sourceTree = "<group>"; };
 		EB2D51A12AC45100007859A8 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		EB3B82F32ACE615500B80FAE /* WeatherProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherProvider.swift; sourceTree = "<group>"; };
 		FA15EB066F9995FC5EAA48A7 /* Pods-Weather-Group3.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Weather-Group3.debug.xcconfig"; path = "Target Support Files/Pods-Weather-Group3/Pods-Weather-Group3.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -214,6 +216,7 @@
 				EB2D51982AC443E9007859A8 /* WeatherViewModel.swift */,
 				EB2D519A2AC44404007859A8 /* WeatherAPIService.swift */,
 				EB2D51A12AC45100007859A8 /* LocationManager.swift */,
+				EB3B82F32ACE615500B80FAE /* WeatherProvider.swift */,
 			);
 			path = DayWeatherViewModels;
 			sourceTree = "<group>";
@@ -369,6 +372,7 @@
 				D6B1E3752AC404E00082934A /* AppDelegate.swift in Sources */,
 				30DDC6752ACCE49000F00D39 /* MapCell.swift in Sources */,
 				D66A9D0D2ACE4D3D00A04460 /* MainLayoutProvider.swift in Sources */,
+				EB3B82F42ACE615500B80FAE /* WeatherProvider.swift in Sources */,
 				D6B1E3772AC404E00082934A /* SceneDelegate.swift in Sources */,
 				30DDC6772ACCE49500F00D39 /* CustomAnnotation.swift in Sources */,
 				D66A9CE92ACD3BC800A04460 /* WeatherService.swift in Sources */,

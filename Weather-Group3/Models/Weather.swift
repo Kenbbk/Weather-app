@@ -11,6 +11,11 @@ import Foundation
 // JSON 데이터 디코딩
 struct DayWeather: Decodable {
     let list: [WeatherThreeHour]
+    let city: City
+}
+
+struct City: Decodable {
+    let name: String
 }
 
 struct WeatherThreeHour: Decodable {

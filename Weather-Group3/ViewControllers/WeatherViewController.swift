@@ -33,14 +33,23 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
     }()
     
     // MARK: - Properties
-    var section: Int?
-    var row: Int?
+    let oneDayWeathers: [OneDayWeather]
+    let indexPath: IndexPath
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("section: \(section)")
-        print("row: \(row)")
+
         configure()
+    }
+    
+    init(oneDayWeathers: [OneDayWeather], indexPath: IndexPath){
+        self.oneDayWeathers = oneDayWeathers
+        self.indexPath = indexPath
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: Helpers
@@ -96,10 +105,11 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         
         dateFormatter.dateFormat = "YYYY-mm-dd"
         var inputDate: Date = Date()
-        if section == 0 {
-            inputDate = dateFormatter.date(from: WeatherViewModel.fiveDays[0])!
-        } else if section == 1 {
-            inputDate = dateFormatter.date(from: WeatherViewModel.fiveDays[row!])!
+        if indexPath.section == 0 {
+            print(oneDayWeathers.count, "section == 0")
+            inputDate = dateFormatter.date(from: oneDayWeathers[0].day)!
+        } else if indexPath.section == 1 {
+            inputDate = dateFormatter.date(from: oneDayWeathers[indexPath.row ?? 0].day)!
         }
         
         dateFormatter.dateFormat = "YYYY년 mm월 dd일 EEE요일"
@@ -114,9 +124,9 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
     
     private func setTemp() {
         
-        let formattedCurrentTemp: String = String(format: "%.1f", WeatherViewModel.fiveDaysTemp[row ?? 0].temp[0])
-        let formattedHighTemp: String = String(format: "%.1f", WeatherViewModel.fiveDaysTemp[row ?? 0].temp.max()!)
-        let formattedLowTemp: String = String(format: "%.1f", WeatherViewModel.fiveDaysTemp[row ?? 0].temp.min()!)
+        let formattedCurrentTemp: String = String(format: "%.1f", oneDayWeathers[indexPath.row].timeWeather[0].temp)
+        let formattedHighTemp: String = String(format: "%.1f", oneDayWeathers[indexPath.row].highTemp)
+        let formattedLowTemp: String = String(format: "%.1f", oneDayWeathers[indexPath.row].lowTemp)
         
         let currentTemp: String = formattedCurrentTemp
         let highTemp: String = formattedHighTemp
@@ -126,10 +136,25 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     private func setLineChart() {
-        if section == 0 {
-            tempGraphView.setLineChart(temp: WeatherViewModel.fiveDaysTemp[0].temp, time: WeatherViewModel.fiveDaysTemp[0].time)
-        } else if section == 1 {
-            tempGraphView.setLineChart(temp: WeatherViewModel.fiveDaysTemp[row ?? 0].temp, time: WeatherViewModel.fiveDaysTemp[row ?? 0].time)
+        if indexPath.section == 0 {
+            var dayTemp: [Double] = []
+            var dayTime: [String] = []
+            for index in 0..<oneDayWeathers[0].timeWeather.count {
+                dayTemp.append(oneDayWeathers[0].timeWeather[index].temp)
+                dayTime.append(oneDayWeathers[0].timeWeather[index].time)
+            }
+            
+            tempGraphView.setLineChart(temp: dayTemp, time: dayTime)
+        } else if indexPath.section == 1 {
+            var dayTemp: [Double] = []
+            var dayTime: [String] = []
+            for index in 0..<oneDayWeathers[indexPath.row].timeWeather.count {
+                dayTemp.append(oneDayWeathers[indexPath.row].timeWeather[index].temp)
+                dayTime.append(oneDayWeathers[indexPath.row].timeWeather[index].time)
+            }
+            
+            tempGraphView.setLineChart(temp: dayTemp, time: dayTime)
+//            tempGraphView.setLineChart(temp: WeatherViewModel.fiveDaysTemp[row ?? 0].temp, time: WeatherViewModel.fiveDaysTemp[row ?? 0].time)
         }
     }
     
