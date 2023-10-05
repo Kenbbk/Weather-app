@@ -64,20 +64,19 @@ class SecondCell: UICollectionViewCell {
     }
     
     func configure(model: OneDayWeather) {
-        ImageLoader().loadImage(iconCode: model.icon) { result in
-            switch result {
-            case .failure(let error):
-                print(error)
-            case .success(let image):
-                DispatchQueue.main.asyncAndWait {
-                    self.imageView.image = image
-                }
-            }
-        }
+//        ImageLoader().loadImage(iconCode: model.icon) { result in
+//            switch result {
+//            case .failure(let error):
+//                print(error)
+//            case .success(let image):
+//                DispatchQueue.main.asyncAndWait {
+//                    self.imageView.image = image
+//                }
+//            }
+//        }
         
         dayLabel.text = model.day
         TodayCollectionViewCell().displayWeatherIcon(iconCode: model.icon, imageView: self.imageView)
-//        imageView.image = UIImage(systemName: model.icon)
         lowLabel.text = "\(Int(model.lowTemp))"
         highLabel.text = "\(Int(model.highTemp))"
         
