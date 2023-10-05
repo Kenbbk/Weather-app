@@ -12,10 +12,16 @@ class MapCell: UICollectionViewCell {
     let identifier = "mapCell"
     let mapView = MKMapView()
 
+    var pinTintColor: UIColor = .systemBackground
+    var temperature: Double = 0.0
+    var annotationText: String = "24℃"
+    var systemImageName: String = "thermometer.low"
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
-        addAnnotation()
+        mapView.delegate = self
+        addAnnotation(pinTintColor: pinTintColor, annotationText: annotationText, systemImageName: systemImageName)
     }
 
     @available(*, unavailable)
@@ -41,12 +47,26 @@ extension MapCell {
         ])
     }
 
-    private func addAnnotation() {
+    private func addAnnotation(pinTintColor: UIColor, annotationText: String, systemImageName: String) {
         let seoulCoordinate = CLLocationCoordinate2D(latitude: 37.5729, longitude: 126.9794)
+//        if weatherResponse.list.count > 3 {
+//            let noonWeather = weatherResponse.list[3]
+//            let temperature = noonWeather.main.temp
+//            let pressure = noonWeather.main.pressure
+//            let humidity = noonWeather.main.humidity
+//
+//            print("온도: \(temperature)°C")
+//            print("기압: \(pressure) hPa")
+//            print("습도: \(humidity)%")
+//        } else {
+//            print("낮 12시 데이터를 찾을 수 없습니다.")
+//        }
+        
+        let temperatureAnnotationText = "\(temperature)℃"
         let annotation = CustomAnnotation(
             pinTintColor: .systemBackground,
-            annotationText: "11mm",
-            systemImageName: "cloud.sun"
+            annotationText: temperatureAnnotationText,
+            systemImageName: "thermometer.low"
         )
         annotation.coordinate = seoulCoordinate
         mapView.addAnnotation(annotation)
@@ -56,3 +76,4 @@ extension MapCell {
         mapView.setRegion(region, animated: false)
     }
 }
+

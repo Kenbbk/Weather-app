@@ -21,20 +21,15 @@ struct City: Decodable {
 struct WeatherThreeHour: Decodable {
     let main: Main
     let weather: [Weather]
-    let wind: Wind
     let dt_txt: String
 }
 
 struct Main: Decodable {
     let temp: Double
+    let pressure: Int
+    let humidity: Int
 }
 
-struct Wind: Decodable {
-    let speed: Double
-    let deg: Double
-    let gust: Double
-}
- 
 struct Weather: Decodable {
     let main: String
     let description: String

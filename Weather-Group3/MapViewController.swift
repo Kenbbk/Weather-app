@@ -11,18 +11,24 @@ import UIKit
 
 class MapViewController: UIViewController {
     let buttonSize: CGFloat = 50.0
+    
+    // 위치 디폴트: 서울
     var currentLatitude: Double = 37.5729
     var currentLongitude: Double = 126.9794
+    
+    var temperature: Int = 0 // 온도
+    var pressure: Int = 0 // 기압
+    var humidity: Int = 0 // 습도
+    
     var pinTintColor: UIColor = .systemBackground
-    var annotationText: String = "36mm"
-    var systemImageName: String = "cloud.sun.rain"
+    var annotationText: String = "24℃"
+    var systemImageName: String = "thermometer.low"
     
     let mapView = MKMapView()
     let completeButton = UIButton()
     let locationButton = UIButton()
     let listButton = UIButton()
     let layerButton = UIButton()
-    
     
     let manager = CLLocationManager()
     
@@ -34,6 +40,7 @@ class MapViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+       
         showLocation(latitude: currentLatitude, longitude: currentLongitude, pinTintColor: pinTintColor, annotationText: annotationText, systemImageName: systemImageName)
     }
 }
@@ -50,7 +57,6 @@ extension MapViewController {
         view.addSubview(listButton)
         view.addSubview(layerButton)
         
-        
         mapView.translatesAutoresizingMaskIntoConstraints = false
         completeButton.translatesAutoresizingMaskIntoConstraints = false
         locationButton.translatesAutoresizingMaskIntoConstraints = false
@@ -62,7 +68,6 @@ extension MapViewController {
         completeButton.backgroundColor = .secondarySystemBackground
         completeButton.layer.cornerRadius = 8
         completeButton.addTarget(self, action: #selector(completeButtonTapped), for: .touchUpInside)
-        
         
         locationButton.setImage(UIImage(systemName: "location"), for: .normal)
         locationButton.tintColor = .label
@@ -128,13 +133,17 @@ extension MapViewController {
             mapView.removeAnnotations(mapView.annotations)
             currentLatitude = 37.5729
             currentLongitude = 126.9794
-            showLocation(latitude: 37.5729, longitude: 126.9794, pinTintColor: .white, annotationText: "11mm", systemImageName: "cloud.sun")
+            systemImageName = "thermometer.low"
+            annotationText = "\(temperature)℃"
+            getWeatherInfo(currentLatitude: currentLatitude, currentLongitude: currentLongitude)
         }
         let option2 = UIAlertAction(title: "제주", style: .default) { [self] _ in
             mapView.removeAnnotations(mapView.annotations)
             currentLatitude = 33.4996
             currentLongitude = 126.5312
-            showLocation(latitude: 33.4996, longitude: 126.5312, pinTintColor: .white, annotationText: "0mm", systemImageName: "sun.max")
+            systemImageName = "thermometer.low"
+            annotationText = "\(temperature)℃"
+            getWeatherInfo(currentLatitude: currentLatitude, currentLongitude: currentLongitude)
         }
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
@@ -154,15 +163,14 @@ extension MapViewController {
     @objc
     func layerButtonTapped(_ sender: UIButton) {
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        let option1 = UIAlertAction(title: "강수량", style: .default) { _ in
-            self.setCustomPin(pinTintColor: .white, annotationText: "11mm", systemImageName: "cloud.sun")
+        let option1 = UIAlertAction(title: "기온", style: .default) { _ in
+            self.setCustomPin(pinTintColor: .white, annotationText: "\(self.temperature)℃", systemImageName: "thermometer.low")
         }
-        let option2 = UIAlertAction(title: "기온", style: .default) { _ in
-            self.setCustomPin(pinTintColor: .white, annotationText: "29℃", systemImageName: "thermometer.low")
+        let option2 = UIAlertAction(title: "기압", style: .default) { _ in
+            self.setCustomPin(pinTintColor: .white, annotationText: "\(self.pressure)", systemImageName: "mountain.2")
         }
-        
-        let option3 = UIAlertAction(title: "대기질", style: .default) { _ in
-            self.setCustomPin(pinTintColor: .white, annotationText: "27", systemImageName: "aqi.medium")
+        let option3 = UIAlertAction(title: "습도", style: .default) { _ in
+            self.setCustomPin(pinTintColor: .white, annotationText: "\(self.humidity)%", systemImageName: "humidity")
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         alertController.addAction(option1)
@@ -182,14 +190,6 @@ extension MapViewController: CLLocationManagerDelegate {
         manager.startUpdatingLocation()
     }
     
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let location = locations.first {
-            currentLatitude = location.coordinate.latitude
-            currentLongitude = location.coordinate.longitude
-            manager.stopUpdatingLocation()
-        }
-    }
-    
     func showLocation(latitude: Double, longitude: Double, pinTintColor: UIColor, annotationText: String, systemImageName: String) {
         let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
         let span = MKCoordinateSpan(latitudeDelta: 5.0, longitudeDelta: 5.0)
@@ -199,9 +199,44 @@ extension MapViewController: CLLocationManagerDelegate {
     }
     
     func setCustomPin(pinTintColor: UIColor, annotationText: String, systemImageName: String) {
-        let customPin = CustomAnnotation(pinTintColor: pinTintColor, annotationText: annotationText, systemImageName: systemImageName)
+        let customPin = CustomAnnotation(pinTintColor: pinTintColor,
+                                         annotationText: annotationText,
+                                         systemImageName: systemImageName)
         
         customPin.coordinate = CLLocationCoordinate2D(latitude: currentLatitude, longitude: currentLongitude)
         mapView.addAnnotation(customPin)
+    }
+    
+    func getWeatherInfo(currentLatitude: Double, currentLongitude: Double) {
+        let baseURL = "https://api.openweathermap.org/data/2.5/forecast"
+        let apiKey = WeatherAPIService().apiKey
+        let urlString = "\(baseURL)?lat=\(currentLatitude)&lon=\(currentLongitude)&appid=\(apiKey)"
+        
+        WeatherAPIService().getLocalWeather(url: urlString) { result in
+            switch result {
+            case .success(let weatherResponse):
+                DispatchQueue.main.async {
+                    if let firstWeather = weatherResponse.list.first {
+                        let tempChange = Int(firstWeather.main.temp - 273.15)
+                        self.temperature = tempChange
+                        self.pressure = firstWeather.main.pressure
+                        self.humidity = firstWeather.main.humidity
+                    }
+                    print("#mapVC: \(weatherResponse.list)")
+                }
+            case .failure:
+                print("실패: error")
+            }
+        }
+        showLocation(latitude: currentLatitude, longitude: currentLongitude, pinTintColor: pinTintColor, annotationText: annotationText, systemImageName: systemImageName)
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let location = locations.first {
+            currentLatitude = location.coordinate.latitude
+            currentLongitude = location.coordinate.longitude
+            manager.stopUpdatingLocation()
+            getWeatherInfo(currentLatitude: currentLatitude, currentLongitude: currentLongitude)
+        }
     }
 }
