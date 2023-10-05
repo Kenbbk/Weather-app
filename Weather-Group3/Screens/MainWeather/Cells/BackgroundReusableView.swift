@@ -11,15 +11,26 @@ class BackgroundReusableView: UICollectionReusableView {
     
     static let identifier = "BackgroundReusableView"
     
+    
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
-        backgroundColor = .blue.withAlphaComponent(0.3)
+        layer.cornerRadius = 15
+        backgroundColor = .gray.withAlphaComponent(0.1)
+        addGesture()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    @objc func tapped() {
+        print("tapped")
+    }
+    
+    private func addGesture() {
+        self.isUserInteractionEnabled = true
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapped)))
+    }
     
 }
