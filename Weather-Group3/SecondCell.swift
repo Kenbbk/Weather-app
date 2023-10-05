@@ -138,4 +138,12 @@ class SecondCell: UICollectionViewCell {
         ])
     }
     
+    func configure(model: OneDayWeather) {
+        dayLabel.text = model.day
+        imageView.image = UIImage(systemName: model.icon)
+        lowLabel.text = "\(model.lowTemp)"
+        highLabel.text = "\(model.highTemp)"
+        
+    }
+    
 }
