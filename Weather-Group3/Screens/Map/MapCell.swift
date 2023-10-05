@@ -28,7 +28,6 @@ class MapCell: UICollectionViewCell {
         super.init(frame: frame)
         setup()
         getCurrentLocation()
-        showLocation(latitude: currentLatitude, longitude: currentLongitude, pinTintColor: pinTintColor, annotationText: annotationText, systemImageName: systemImageName)
     }
 
     @available(*, unavailable)
