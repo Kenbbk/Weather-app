@@ -28,8 +28,9 @@ class SecondCell: UICollectionViewCell {
     
     let imageView: UIImageView = {
         let iv = UIImageView()
+        
         iv.image = UIImage(systemName: "house")
-        iv.tintColor = .white
+        iv.tintColor = .black
         return iv
     }()
     
@@ -63,12 +64,20 @@ class SecondCell: UICollectionViewCell {
     }
     
     func configure(model: OneDayWeather) {
+        ImageLoader().loadImage(iconCode: model.icon) { result in
+            switch result {
+            case .failure(let error):
+                print(error)
+            case .success(let image):
+                DispatchQueue.main.asyncAndWait {
+                    self.imageView.image = image
+                }
+            }
+        }
+        
         dayLabel.text = model.day
-        imageView.image = UIImage(systemName: model.icon)
         lowLabel.text = "\(Int(model.lowTemp))"
         highLabel.text = "\(Int(model.highTemp))"
-        
-        
         
     }
     
@@ -148,7 +157,4 @@ class SecondCell: UICollectionViewCell {
             colorBar.heightAnchor.constraint(equalToConstant: 5)
         ])
     }
-    
-   
-    
 }

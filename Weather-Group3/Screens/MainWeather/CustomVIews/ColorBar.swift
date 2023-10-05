@@ -70,7 +70,6 @@ class ColorBar: UIView {
             leftView.widthAnchor.constraint(equalTo: widthAnchor, multiplier: firstDouble),
             leftView.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
-        
     }
     
     private func configureRightView() {
@@ -90,9 +89,6 @@ class ColorBar: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    
-    
 }
 
 
