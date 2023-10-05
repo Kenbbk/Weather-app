@@ -8,21 +8,37 @@
 import Foundation
 import UIKit
 
-class WeatherViewModel {
+struct WeatherViewModel {
     let tempUnit: String = "℃"
     
     // 시간대별 온도를 저장할 곳
-    static var tempOfChart: [Double] = []
-    static var timeOfChart: [String] = []
-    
     static var fiveDays: [String] = []
-    static var fiveDaysTemp: [FivedayTemp] = []
+    static var fiveDaysTemp: [FiveDayTemp] = []
+    
+    // 일별 데이터 저장.
+    static var allDaysWeather: [OneDayWeather] = []
 }
 
-struct FivedayTemp {
+struct FiveDayTemp {
     var time: [String]
-//    var icon: [String]
+    var icon: [String]
     var temp: [Double]
+}
+
+// 날짜 하루기준
+struct OneDayWeather {
+    let day: String // 날짜
+    let highTemp: Double // 최고기온
+    let lowTemp: Double // 최저기온
+    let icon: String // 아이콘
+    let timeWeather: [TimeWeather]// [시간별 날씨]
+}
+
+// 시간별 날씨
+struct TimeWeather {
+    let time: String // 시간
+    let temp: Double // 기온
+    let icon: String // 아이콘
 }
 
 struct DayDataModel {

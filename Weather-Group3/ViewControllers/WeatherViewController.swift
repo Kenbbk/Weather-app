@@ -34,59 +34,16 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
     
     // MARK: - Properties
     var section: Int?
-    var weather: Weather?
-    var main: Main?
-    var name: String?
-    // 현재 위치를 파악한 후 날씨 정보를 얻어오는 url
-    var urlString: String = ""
+    var row: Int?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         print("section: \(section)")
+        print("row: \(row)")
         configure()
     }
     
     // MARK: Helpers
-    
-    func updateUI() {
-        // 여기에서 화면 업데이트 작업 수행
-        setLineChart()
-        setForecast()
-    }
-    
-    //    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-    //        if let location = locations.first {
-    //            // 위도와 경도 가져오기
-    //            let latitude = location.coordinate.latitude
-    //            let longitude = location.coordinate.longitude
-    //            print("위치 업데이트!")
-    //            print("위도 : \(latitude)")
-    //            print("경도 : \(longitude)")
-    //
-    //            urlString = "https://api.openweathermap.org/data/2.5/weather?lat=\(latitude)&lon=\(longitude)&appid=\(WeatherAPIService().apiKey)"
-    //
-    //            print("url String: \(urlString)")
-    //            WeatherAPIService().getLocalWeather(url: urlString) { result in
-    //                switch result {
-    //                case .success(let weatherResponse):
-    //                    DispatchQueue.main.async {
-    //                        self.weather = weatherResponse.weather.first
-    //                        self.main = weatherResponse.main
-    //                        self.name = weatherResponse.name
-    //                    }
-    //                    print("main : \(weatherResponse.main)")
-    //                    print("name : \(weatherResponse.name)")
-    //                case .failure(_ ):
-    //                    print("실패: error")
-    //                }
-    //            }
-    //        }
-    //    }
-    
-    // 위치 가져오기 실패
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("Error: 위치 가져오기 실패")
-    }
     
     func configure() {
         view.backgroundColor = .white
@@ -94,12 +51,16 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         setUI()
         setConstraint()
         insertDataSource() // scroll View
+        
+        setDate()
         setTemp()
         setLineChart()
         setForecast()
     }
     
     private func setUI() {
+        weatherView.delegate = self
+        
         view.addSubview(weatherView)
         view.addSubview(dateScrollView)
         view.addSubview(tempGraphView)
@@ -129,30 +90,58 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
         dateScrollView.dataSource = Days.getDataSource()
     }
     
+    private func setDate() {
+        
+        let dateFormatter = DateFormatter()
+        
+        dateFormatter.dateFormat = "YYYY-mm-dd"
+        var inputDate: Date = Date()
+        if section == 0 {
+            inputDate = dateFormatter.date(from: WeatherViewModel.fiveDays[0])!
+        } else if section == 1 {
+            inputDate = dateFormatter.date(from: WeatherViewModel.fiveDays[row!])!
+        }
+        
+        dateFormatter.dateFormat = "YYYY년 mm월 dd일 EEE요일"
+        
+        let outputDate = dateFormatter.string(from: inputDate)
+        
+        let selectedDate: String = outputDate
+        print("selectedDate : \(selectedDate)")
+        
+        tempGraphView.setDate(date: selectedDate)
+    }
+    
     private func setTemp() {
-        let currentTemp: String = "21"
-        let highTemp: String = "25"
-        let lowTemp: String = "17"
+        
+        let formattedCurrentTemp: String = String(format: "%.1f", WeatherViewModel.fiveDaysTemp[row ?? 0].temp[0])
+        let formattedHighTemp: String = String(format: "%.1f", WeatherViewModel.fiveDaysTemp[row ?? 0].temp.max()!)
+        let formattedLowTemp: String = String(format: "%.1f", WeatherViewModel.fiveDaysTemp[row ?? 0].temp.min()!)
+        
+        let currentTemp: String = formattedCurrentTemp
+        let highTemp: String = formattedHighTemp
+        let lowTemp: String = formattedLowTemp
         
         tempGraphView.setTemp(currentTemp: currentTemp, highTemp: highTemp, lowTemp: lowTemp)
     }
     
     private func setLineChart() {
-        print("test: WeatherViewModel().tempOfChart \(WeatherViewModel.tempOfChart)")
-        
-        // 5일간의 기온 확인.
-        for i in 0..<WeatherViewModel.fiveDays.count {
-            print("i: \(i)")
-            print("WeatherViewModel.fiveDays[i]: \(WeatherViewModel.fiveDays[i])")
-            print("WeatherViewModel.fiveDaysTemp[i]: \(WeatherViewModel.fiveDaysTemp[i])")
+        if section == 0 {
+            tempGraphView.setLineChart(temp: WeatherViewModel.fiveDaysTemp[0].temp, time: WeatherViewModel.fiveDaysTemp[0].time)
+        } else if section == 1 {
+            tempGraphView.setLineChart(temp: WeatherViewModel.fiveDaysTemp[row ?? 0].temp, time: WeatherViewModel.fiveDaysTemp[row ?? 0].time)
         }
-        
-        tempGraphView.setLineChart(temp: WeatherViewModel.fiveDaysTemp[0].temp, time: WeatherViewModel.fiveDaysTemp[0].time)
     }
     
     private func setForecast() {
         let forecast: String = "현재 기온은 21도이며 한때 흐린 상태입니다. 오후 12시~오후 1시에 맑은 상태가, 오후 2시에 대체로 흐린상태가 예상됩니다. 오늘 기온은 17도에서 25도사이입니다."
         
         tempGraphView.setForecast(forecast: forecast)
+    }
+}
+
+extension WeatherViewController: WeatherTitleViewDelegate {
+    func closeButtonTapped() {
+        dismiss(animated: true, completion: nil)
     }
 }

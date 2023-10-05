@@ -13,8 +13,6 @@ class TempGraphView: UIView {
     
     var viewTitle: String = "View Title"
     var labelSize: CGFloat = 15
-    // 표시되는 날짜
-    var selectedDate: String = "2023년 9월 26일 화요일"
     // stackView의 spacing
     var stackViewHoirzontalSpacing: CGFloat = 2
     // leading, trailing constraint 값
@@ -24,7 +22,6 @@ class TempGraphView: UIView {
     lazy var dateLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: labelSize)
-        label.text = selectedDate
         label.textAlignment = .center
         
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -84,6 +81,7 @@ class TempGraphView: UIView {
     
     lazy var tempLineChartView: LineChartView = {
         let lineChartView = LineChartView()
+        lineChartView.isUserInteractionEnabled = false
         
         lineChartView.translatesAutoresizingMaskIntoConstraints = false
         return lineChartView
@@ -169,6 +167,10 @@ class TempGraphView: UIView {
         ])
     }
     
+    func setDate(date: String) {
+        dateLabel.text = date
+    }
+    
     func setTemp(currentTemp: String, highTemp: String, lowTemp: String) {
         currentTempLabel.text = "\(currentTemp)\(WeatherViewModel().tempUnit)"
         highTempLabel.text = "최고:\(highTemp)\(WeatherViewModel().tempUnit) "
@@ -189,8 +191,9 @@ class TempGraphView: UIView {
             entries.append(entry)
         }
         
-        let dataSet = LineChartDataSet(entries: entries, label: "Temperature")
-        dataSet.colors = [NSUIColor.blue] // 그래프 색상 설정
+        let dataSet = LineChartDataSet(entries: entries, label: "온도")
+        dataSet.colors = [NSUIColor.black] // 그래프 색상 설정
+        dataSet.circleColors = [NSUIColor.blue]
         
         let data = LineChartData(dataSet: dataSet)
         tempLineChartView.data = data
@@ -198,9 +201,6 @@ class TempGraphView: UIView {
         // X축 설정
         tempLineChartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: timeLabels)
         tempLineChartView.xAxis.granularity = 1
-        
-        // 추가적인 그래프 설정
-        tempLineChartView.chartDescription.text = "Hourly Temperature Chart"
     }
     
     func setForecast(forecast: String) {

@@ -26,6 +26,7 @@ class TodayCollectionViewCell: UICollectionViewCell {
     lazy var iconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
+        
         return imageView
     }()
     
@@ -79,14 +80,14 @@ class TodayCollectionViewCell: UICollectionViewCell {
         
         // 날씨 정보에서 icon 코드 추출
         let code = iconCode
-        displayWeatherIcon(iconCode: code)
+        displayWeatherIcon(iconCode: code, imageView: self.iconImageView)
         
         let formattedTemp = String(format: "%.1f", temp)
         tempLabel.text = String(formattedTemp)
     }
     
     // 아이콘 이미지를 다운로드하고 표시하는 함수
-    func displayWeatherIcon(iconCode: String) {
+    func displayWeatherIcon(iconCode: String, imageView: UIImageView) {
         // 아이콘 이미지 URL 생성
         let iconURLString = "https://openweathermap.org/img/wn/\(iconCode).png"
         guard let iconURL = URL(string: iconURLString) else {
@@ -103,7 +104,7 @@ class TodayCollectionViewCell: UICollectionViewCell {
             if let data = data, let image = UIImage(data: data) {
                 // 다운로드한 이미지를 메인 스레드에서 표시
                 DispatchQueue.main.async {
-                    self.iconImageView.image = image // image 표시!
+                    imageView.image = image // image 표시!
                 }
             }
         }

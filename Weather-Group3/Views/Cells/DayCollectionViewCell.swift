@@ -23,12 +23,11 @@ class DayCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    lazy var iconLabel: UILabel = {
-        let label = UILabel()
+    lazy var iconImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
         
-        label.font = UIFont.systemFont(ofSize: labelSize)
-        
-        return label
+        return imageView
     }()
     
     lazy var lowTempLabel: UILabel = {
@@ -38,6 +37,8 @@ class DayCollectionViewCell: UICollectionViewCell {
         
         return label
     }()
+    
+    let colorBar = ColorBar()
     
     lazy var highTempLabel: UILabel = {
         let label = UILabel()
@@ -50,7 +51,7 @@ class DayCollectionViewCell: UICollectionViewCell {
     // progress bar가 들어가야할 부분
     
     lazy var weatherStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [timeLabel, iconLabel, lowTempLabel, highTempLabel])
+        let stackView = UIStackView(arrangedSubviews: [timeLabel, iconImageView, lowTempLabel, colorBar, highTempLabel])
         stackView.spacing = stackViewSpacing
         stackView.axis = .horizontal
         stackView.distribution = .fillProportionally
@@ -86,9 +87,16 @@ class DayCollectionViewCell: UICollectionViewCell {
         ])
     }
     
-    func configure(with time: String, icon: String, lowTemp: Double, highTemp: Double) {
+    func colorViews(min: Double, max: Double) {
+        colorBar.setConstraint(constraint: (min, max))
+    }
+    
+    func configure(with time: String, iconCode: String, lowTemp: Double, highTemp: Double) {
         timeLabel.text = time
-        iconLabel.text = icon
+        
+        let code = iconCode
+        TodayCollectionViewCell().displayWeatherIcon(iconCode: code, imageView: self.iconImageView)
+        
         let formattedLowTemp = String(format: "%.1f", lowTemp)
         lowTempLabel.text = formattedLowTemp
         let formattedHighTemp = String(format: "%.1f", highTemp)

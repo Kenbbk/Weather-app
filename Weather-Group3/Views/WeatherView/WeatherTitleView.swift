@@ -8,6 +8,10 @@
 import Foundation
 import UIKit
 
+protocol WeatherTitleViewDelegate: AnyObject {
+    func closeButtonTapped()
+}
+
 class WeatherTitleView: UIView {
     
     var viewTitle: String = "View Title"
@@ -25,6 +29,7 @@ class WeatherTitleView: UIView {
         return label
     }()
     
+    var delegate: WeatherTitleViewDelegate?
     lazy var closeButton: UIButton = {
         let button = UIButton()
         
@@ -34,11 +39,11 @@ class WeatherTitleView: UIView {
         button.setImage(image, for: .normal)
         button.tintColor = .darkGray
         
+        button.addTarget(self, action: #selector(closeButtonTapped), for: .touchUpInside)
+        
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
-    
-    
     
     // MARK: Initializers
     override init(frame: CGRect) {
@@ -71,5 +76,10 @@ class WeatherTitleView: UIView {
             closeButton.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
             closeButton.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -10),
         ])
+    }
+    
+    // MARK: Action
+    @objc func closeButtonTapped() {
+        delegate?.closeButtonTapped()
     }
 }
