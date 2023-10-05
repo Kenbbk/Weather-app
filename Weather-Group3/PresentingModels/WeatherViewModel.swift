@@ -11,10 +11,6 @@ import UIKit
 struct WeatherViewModel {
     let tempUnit: String = "℃"
     
-    // 시간대별 온도를 저장할 곳
-//    static var fiveDays: [String] = []
-//    static var fiveDaysTemp: [FiveDayTemp] = []
-    
     // 일별 데이터 저장.
     static var allDaysWeather: [OneDayWeather] = []
     // 1 2 3 4 5

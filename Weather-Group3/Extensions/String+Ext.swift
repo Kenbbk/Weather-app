@@ -22,10 +22,33 @@ extension String {
     }
     
     func convertToTimeString() -> String {
-        let parts = self.split(separator: " ")
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        
+        let convertDate = dateFormatter.date(from: self)
+        dateFormatter.timeZone = TimeZone.current
+        
+        let outputDate = dateFormatter.string(from: convertDate!)
+        
+        let parts = outputDate.split(separator: " ")
         
         let timeParts = String(parts[1]).split(separator: ":00")
         let time = "\(timeParts[0]) 시"
         return time
+    }
+    
+    func convertInputDate() -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        
+//        dateFormatter.dateFormat = "yyyy-MM-dd"
+        
+        let convertDate = dateFormatter.date(from: self)
+        dateFormatter.timeZone = TimeZone.current
+        
+        let outputDate = dateFormatter.string(from: convertDate!)
+        return outputDate
     }
 }

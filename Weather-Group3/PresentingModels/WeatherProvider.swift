@@ -32,8 +32,14 @@ class WeatherProvider {
             // 온도 저장.
             let tempChange = forecast.main.temp // - 273.15
             
+            
+            let locationDate = forecast.dt_txt.convertInputDate()
+            
+            print(locationDate, "locationate")
+            print(forecast.dt_txt, "forecast.dt_txt")
+            
             // 공백 기준으로 문자열 자르기 ex) 2023-10-06 12:00:00 -> 2023-10-06, 12:00:00
-            let parts = forecast.dt_txt.split(separator: " ")
+            let parts = locationDate.split(separator: " ")
             let day = String(parts[0])
             
             let timeParts = String(parts[1]).split(separator: ":00")

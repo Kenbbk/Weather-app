@@ -97,7 +97,7 @@ extension MapCell: CLLocationManagerDelegate {
 
                         self.showLocation(latitude: currentLatitude, longitude: currentLongitude, pinTintColor: self.pinTintColor, annotationText: self.annotationText, systemImageName: self.systemImageName)
                     }
-                    print("#mapcell: \(weatherResponse.list)")
+                    // print("#mapcell: \(weatherResponse.list)")
                 }
             case .failure:
                 print("실패: error")
