@@ -20,7 +20,10 @@ class MainWeatherVC: UIViewController {
     //MARK: - Properties
     let locationManager = CLLocationManager()
     
-    
+    // 전체 날씨 정보
+    var oneDayWeathers: [OneDayWeather] = []
+    // Header View에 표시되는 정보
+    var currentLocationForecast: CurrentLocationForecast?
     
     var heightConstraint: NSLayoutConstraint!
     
@@ -52,24 +55,21 @@ class MainWeatherVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // test 231003
-        // Indicator 임시로 테스트
+        // Indicator
         activityIndicator.center = view.center
         view.addSubview(activityIndicator)
         activityIndicator.startAnimating()
         
-        //        view.backgroundColor = .white
         header = supplementaryHeaderItem()
         view.backgroundColor = UIColor(patternImage: UIImage(named: "background2")!)
-        configureUI()
+//        configureUI()
         //        configureDataSource()
         //        applySnapshot()
         
         collectionView.delegate = self
-        // Test(sr) - MapCell 등록
         collectionView.register(MapCell.self, forCellWithReuseIdentifier: "mapCell")
         
-        // Test: 특정 위치의 날씨정보 얻어오기
+        // 현재 위치의 날씨정보 얻어오기
         setLocationManager()
     }
     
@@ -84,6 +84,9 @@ class MainWeatherVC: UIViewController {
     
     private func configureDataSource() {
         
+        // Main Header View
+        mainHeaderView.setCurrentLocation(currentLocationForecast: currentLocationForecast!)
+        
         dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
             if indexPath.section == 0 {
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TodayCollectionViewCell.identifier, for: indexPath) as! TodayCollectionViewCell
@@ -97,6 +100,7 @@ class MainWeatherVC: UIViewController {
                 }
                 return cell
             } else if indexPath.section == 1 {
+                print(WeatherViewModel.allDaysWeather.count, "!!!!!")
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DayCollectionViewCell.identifier, for: indexPath) as! DayCollectionViewCell
                 // 5일간의 날씨 표시
                 // test 231003
@@ -427,11 +431,16 @@ extension MainWeatherVC: CLLocationManagerDelegate {
                             }
                         }
                         
+                        print("weatherResponse.city: \(weatherResponse.city.name)")
+                        
+                        self.currentLocationForecast = CurrentLocationForecast(name: weatherResponse.city.name, temp: fiveDaysTemp[0].temp.first!, highTemp: fiveDaysTemp[0].temp.max()!, lowTemp: fiveDaysTemp[0].temp.min()!, description: weatherResponse.list[0].weather[0].description)
+                        print("self.currentLocationForecast: \(self.currentLocationForecast)")
+                        
                         print(weatherResponse.list)
                         print("WeatherViewModel.fiveDays : \(WeatherViewModel.fiveDays)")
                         print("WeatherViewModel.fiveDaysTemp : \(WeatherViewModel.fiveDaysTemp)")
                         
-                        var viewModel = WeatherViewModel.allDaysWeather
+                        
                         
 //                        [Weather_Group3.FiveDayTemp(time: ["15 시", "18 시", "21 시"], icon: ["01d", "01d", "01d"], temp: [17.600000000000023, 20.379999999999995, 25.590000000000032]),
                         
@@ -444,14 +453,15 @@ extension MainWeatherVC: CLLocationManagerDelegate {
                             
                             let oneDayWeather: OneDayWeather = OneDayWeather(day: fiveDays[index], highTemp: fiveDaysTemp[index].temp.max()!, lowTemp: fiveDaysTemp[index].temp.min()!, icon: fiveDaysTemp[index].icon.first!, timeWeather: timeWeather)
                             
-                            viewModel.append(oneDayWeather)
+                            WeatherViewModel.allDaysWeather.append(oneDayWeather)
                         }
                         
-                        print("viewModel: \(viewModel)")
+                        print("viewModel: \(WeatherViewModel.allDaysWeather)")
                         
                         // Indicator
                         self.activityIndicator.stopAnimating()
                         self.activityIndicator.removeFromSuperview()
+                        self.configureUI()
                         self.configureDataSource()
                         self.applySnapshot()
                     }

@@ -17,6 +17,9 @@ struct WeatherViewModel {
     
     // 일별 데이터 저장.
     static var allDaysWeather: [OneDayWeather] = []
+    
+    // 현재 위치 데이터 저장.
+    static var currentLocationForecast: CurrentLocationForecast?
 }
 
 struct FiveDayTemp {
@@ -39,6 +42,15 @@ struct TimeWeather {
     let time: String // 시간
     let temp: Double // 기온
     let icon: String // 아이콘
+}
+
+// 현재 위치에 따른 날씨 정보
+struct CurrentLocationForecast {
+    let name: String
+    let temp: Double
+    let highTemp: Double
+    let lowTemp: Double
+    let description: String
 }
 
 struct DayDataModel {
