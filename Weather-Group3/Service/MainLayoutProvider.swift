@@ -74,20 +74,20 @@ struct MainLayoutProvider {
                 
                 return section
                 
-//            case .fourth:
-//                let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1)))
-//                item.contentInsets = .init(top: 3, leading: 7.5, bottom: 3, trailing: 7.5)
-//
-//                let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(0.5), heightDimension: .absolute(180)), repeatingSubitem: item, count: 2)
-//                group.contentInsets = .init(top: 0, leading: 0, bottom: 5, trailing: 0)
-//                let section = NSCollectionLayoutSection(group: group)
-//
-//                let backgroundItem = NSCollectionLayoutDecorationItem.background(elementKind: BackgroundReusableView.identifier)
-//
-//                backgroundItem.contentInsets = section.contentInsets
-//
-//                section.decorationItems = [backgroundItem]
-//                return section
+            case .fourth:
+                let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1)))
+                item.contentInsets = .init(top: 3, leading: 7.5, bottom: 3, trailing: 7.5)
+
+                let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(0.5), heightDimension: .absolute(180)), repeatingSubitem: item, count: 2)
+                group.contentInsets = .init(top: 0, leading: 0, bottom: 5, trailing: 0)
+                let section = NSCollectionLayoutSection(group: group)
+
+                let backgroundItem = NSCollectionLayoutDecorationItem.background(elementKind: BackgroundReusableView.identifier)
+
+                backgroundItem.contentInsets = section.contentInsets
+
+                section.decorationItems = [backgroundItem]
+                return section
             }
             
             

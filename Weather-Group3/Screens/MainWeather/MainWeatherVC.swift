@@ -49,10 +49,10 @@ class MainWeatherVC: UIViewController {
         let view = UICollectionView(frame: view.bounds, collectionViewLayout: layoutProvider.getMainLayout())
         view.showsVerticalScrollIndicator = false
         view.register(CellHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: CellHeaderView.identifier)
-        
+        view.register(FourthCell.self, forCellWithReuseIdentifier: FourthCell.identifier)
         view.register(TodayCollectionViewCell.self, forCellWithReuseIdentifier: TodayCollectionViewCell.identifier)
         view.register(DayCollectionViewCell.self, forCellWithReuseIdentifier: DayCollectionViewCell.identifier)
-        view.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
+
         view.register(SecondCell.self, forCellWithReuseIdentifier: SecondCell.identifier)
         view.register(MapCell.self, forCellWithReuseIdentifier: "mapCell")
         view.backgroundColor = .clear
@@ -113,7 +113,13 @@ class MainWeatherVC: UIViewController {
             case .third(_):
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "mapCell", for: indexPath) as! MapCell
                 return cell
+             
+            case .fourth(_):
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FourthCell.identifier, for: indexPath) as! FourthCell
+                return cell
             }
+            
+        
         })
         
         
@@ -137,7 +143,7 @@ class MainWeatherVC: UIViewController {
         }
         snapshot.appendItems(a, toSection: .second)
         snapshot.appendItems([.third(8)], toSection: .third)
-        snapshot.appendItems([17,18,19,20,21,22,23,24,], toSection: .fourth)
+//        snapshot.appendItems([.fourth(9), .fourth(10)], toSection: .fourth)
         
         dataSource.apply(snapshot)
     }
@@ -284,12 +290,6 @@ extension MainWeatherVC: CLLocationManagerDelegate {
     }
 }
 
-//extension MainWeatherVC: CellHeaderViewDelegate {
-//    func cellHeaderViewTapped(sectionIndex: Int) {
-//        print(sectionIndex)
-//    }
-//    
-//    
-//}
+
 
 
