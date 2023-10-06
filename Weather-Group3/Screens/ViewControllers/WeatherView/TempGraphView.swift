@@ -97,6 +97,7 @@ class TempGraphView: UIView {
     
     lazy var forecastTextView: UITextView = {
         let textView = UITextView()
+        textView.backgroundColor = .clear
         textView.font = UIFont.boldSystemFont(ofSize: labelSize)
         textView.isScrollEnabled = false // 스크롤 비활성화
         textView.textContainerInset = .zero // 텍스트 컨테이너 여백 제거
