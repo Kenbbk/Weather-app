@@ -130,7 +130,17 @@ class MainWeatherVC: UIViewController {
             guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: CellHeaderView.identifier, for: indexPath) as? CellHeaderView else {
                 fatalError("Could not dequeue sectionHeader: \(CellHeaderView.identifier)")
             }
-            //            sectionHeader.delegate = self
+            switch indexPath.section {
+            case 0:
+                sectionHeader.label.text = "3HOUR FORECAST"
+            case 1:
+                sectionHeader.label.text = "5-DAY FORECAST"
+            case 2:
+                sectionHeader.label.text = "PRECIPITATIOM"
+            default:
+                sectionHeader.label.text = ""
+            }
+            
             sectionHeader.sectionIndex = indexPath.section
             return sectionHeader
         }
@@ -142,7 +152,7 @@ class MainWeatherVC: UIViewController {
         let weathers = timeWeathers[0...16].map { Row.first($0)}
         
         snapshot.appendItems(weathers, toSection: .first)
-        let a = oneDayWeathers.map {
+        let a = oneDayWeathers[0...4].map {
             Row.second($0)
         }
         snapshot.appendItems(a, toSection: .second)

@@ -26,7 +26,7 @@ class CellHeaderView: UICollectionReusableView {
         return iv
     }()
     
-    private let label: UILabel = {
+    let label: UILabel = {
        let label = UILabel()
         label.text = "10-DAY FORECAST"
         
