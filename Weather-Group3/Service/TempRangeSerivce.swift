@@ -12,13 +12,17 @@ struct TempRangeService {
     func getTempRange(min: Double, max: Double, currentMin: Double, currentMax: Double) -> (Double, Double) {
         
         let diff = max - min
-        let maxPoint: Double!
-        let minPoint: Double!
-        
-        
+        var maxPoint: Double!
+        var minPoint: Double!
         minPoint = (currentMin - min) / diff
-        maxPoint = (max - currentMax) / diff
+        if minPoint <= 0 {
+           minPoint = 0
+        }
         
+        maxPoint = (max - currentMax) / diff
+        if maxPoint <= 0 {
+           maxPoint = 0
+        }
         return (minPoint, maxPoint)
 
     }

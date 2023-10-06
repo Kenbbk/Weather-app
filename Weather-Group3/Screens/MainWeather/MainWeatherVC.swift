@@ -17,7 +17,7 @@ enum Section {
 }
 
 enum Row: Hashable {
-    case first(Int)
+    case first(TimeWeather)
     case second(OneDayWeather)
     case third(Int)
     case fourth(Int)
@@ -28,6 +28,8 @@ class MainWeatherVC: UIViewController {
     //MARK: - Properties
     let locationManager = CLLocationManager()
     
+    let weatherProvider = WeatherProvider()
+    
     let tempRangeService = TempRangeService()
     
     let layoutProvider = MainLayoutProvider()
@@ -35,6 +37,8 @@ class MainWeatherVC: UIViewController {
     let colorService = ColorService()
     
     var oneDayWeathers: [OneDayWeather] = []
+    
+    var timeWeathers: [TimeWeather] = []
     
     // Header View에 표시되는 정보
     var currentLocationForecast: CurrentLocationForecast?
@@ -52,7 +56,7 @@ class MainWeatherVC: UIViewController {
         view.register(FourthCell.self, forCellWithReuseIdentifier: FourthCell.identifier)
         view.register(TodayCollectionViewCell.self, forCellWithReuseIdentifier: TodayCollectionViewCell.identifier)
         view.register(DayCollectionViewCell.self, forCellWithReuseIdentifier: DayCollectionViewCell.identifier)
-
+        
         view.register(SecondCell.self, forCellWithReuseIdentifier: SecondCell.identifier)
         view.register(MapCell.self, forCellWithReuseIdentifier: "mapCell")
         view.backgroundColor = .clear
@@ -70,6 +74,7 @@ class MainWeatherVC: UIViewController {
         
         initialConfigurerUI()
         setLocationManager()
+        
         
         
     }
@@ -90,27 +95,16 @@ class MainWeatherVC: UIViewController {
         
         dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
             switch itemIdentifier {
-            case .first(_):
+            case .first(let object):
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TodayCollectionViewCell.identifier, for: indexPath) as! TodayCollectionViewCell
                 
-                let daysWeather = self.oneDayWeathers[0].timeWeather
-                if indexPath.row < daysWeather.count {
-                    cell.configure(with: daysWeather[indexPath.row].time, iconCode: daysWeather[indexPath.row].icon, temp: daysWeather[indexPath.row].temp)
-                } else {
-                    cell.configure(with: "빈칸", iconCode: "01d", temp: 0)
-                }
+                cell.configure(timeWeather: object)
+                
                 return cell
             case .second(let object):
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SecondCell.identifier, for: indexPath) as! SecondCell
                 
                 let tuple = self.tempRangeService.getTempRange(min: self.highLowTemp.0, max: self.highLowTemp.1, currentMin: object.lowTemp, currentMax: object.highTemp)
-                
-                print("start")
-                print(self.highLowTemp.0, "highLowTemp.0")
-                print(self.highLowTemp.1, "highLowTemp.1")
-                print(object, "!!!!")
-                print(tuple, "0000")
-                print("end")
                 
                 cell.colorViews(min: tuple.0, max: tuple.1)
                 cell.colorBar.colors = self.colorService.getColors(min: 20, max: 32)
@@ -121,13 +115,13 @@ class MainWeatherVC: UIViewController {
             case .third(_):
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "mapCell", for: indexPath) as! MapCell
                 return cell
-             
+                
             case .fourth(_):
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FourthCell.identifier, for: indexPath) as! FourthCell
                 return cell
             }
             
-        
+            
         })
         
         
@@ -136,7 +130,17 @@ class MainWeatherVC: UIViewController {
             guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: CellHeaderView.identifier, for: indexPath) as? CellHeaderView else {
                 fatalError("Could not dequeue sectionHeader: \(CellHeaderView.identifier)")
             }
-//            sectionHeader.delegate = self
+            switch indexPath.section {
+            case 0:
+                sectionHeader.label.text = "3HOUR FORECAST"
+            case 1:
+                sectionHeader.label.text = "5-DAY FORECAST"
+            case 2:
+                sectionHeader.label.text = "PRECIPITATIOM"
+            default:
+                sectionHeader.label.text = ""
+            }
+            
             sectionHeader.sectionIndex = indexPath.section
             return sectionHeader
         }
@@ -145,13 +149,15 @@ class MainWeatherVC: UIViewController {
     private func applySnapshot() {
         var snapshot = NSDiffableDataSourceSnapshot<Section, Row>()
         snapshot.appendSections(layoutProvider.sections)
-        snapshot.appendItems([.first(1),.first(2), .first(3), .first(4), .first(5), .first(6), .first(7),], toSection: .first)
-        let a = oneDayWeathers.map {
+        let weathers = timeWeathers[0...16].map { Row.first($0)}
+        
+        snapshot.appendItems(weathers, toSection: .first)
+        let a = oneDayWeathers[0...4].map {
             Row.second($0)
         }
         snapshot.appendItems(a, toSection: .second)
         snapshot.appendItems([.third(8)], toSection: .third)
-//        snapshot.appendItems([.fourth(9), .fourth(10)], toSection: .fourth)
+        //        snapshot.appendItems([.fourth(9), .fourth(10)], toSection: .fourth)
         
         dataSource.apply(snapshot)
     }
@@ -161,8 +167,9 @@ class MainWeatherVC: UIViewController {
     //MARK: - UI
     
     private func initialConfigurerUI() {
-        view.backgroundColor = UIColor(patternImage: UIImage(named: "background2")!)
+        view.backgroundColor = UIColor(patternImage: UIImage(named: "blueSky4")!)
         setIndicators()
+        
     }
     
     private func configureUI() {
@@ -273,26 +280,21 @@ extension MainWeatherVC: CLLocationManagerDelegate {
             
             let baseURL = "https://api.openweathermap.org/data/2.5/forecast"
             let apiKey = WeatherAPIService().apiKey
-            let urlString = "\(baseURL)?lat=\(latitude)&lon=\(longitude)&appid=\(apiKey)"
+            let urlString = "\(baseURL)?lat=\(latitude)&lon=\(longitude)&units=metric&appid=\(apiKey)"
             
             WeatherAPIService().getLocalWeather(url: urlString) { result in
                 switch result {
-                
+                    
                 case .failure(_):
                     print("실패: error")
-                
-                case .success(let weatherResponse):
                     
+                case .success(let weatherResponse):
+                    self.timeWeathers = self.weatherProvider.getTimeWeathers(dayWeather: weatherResponse)
                     self.highLowTemp = HighLowTempSerivce().getHighLowTemp(threeHourList: weatherResponse.list)
-                    self.oneDayWeathers = WeatherProvider().getWeathers(dayWeather: weatherResponse)
-                    self.currentLocationForecast = WeatherProvider().getCityInfo(dayWeather: weatherResponse, oneDayWeather: self.oneDayWeathers[0])
+                    self.oneDayWeathers = self.weatherProvider.getWeathers(dayWeather: weatherResponse)
+                    self.currentLocationForecast = self.weatherProvider.getCityInfo(dayWeather: weatherResponse, oneDayWeather: self.oneDayWeathers[0])
                     
                     DispatchQueue.main.async {
-                        
-                        // 전체 날짜
-                        
-                        // Main Header View 오늘 날짜의 정보 표시
-                        
                         
                         // Indicator
                         self.stopIndicator()
@@ -301,7 +303,7 @@ extension MainWeatherVC: CLLocationManagerDelegate {
                         self.configureDataSource()
                         self.applySnapshot()
                     }
-               
+                    
                 }
             }
         }

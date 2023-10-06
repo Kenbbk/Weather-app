@@ -22,14 +22,15 @@ class CellHeaderView: UICollectionReusableView {
     private let iconImageView: UIImageView = {
        let iv = UIImageView()
         iv.image = UIImage(systemName: "calendar")
+        iv.tintColor = .systemGray5
         return iv
     }()
     
-    private let label: UILabel = {
+    let label: UILabel = {
        let label = UILabel()
         label.text = "10-DAY FORECAST"
         
-        label.textColor = .white
+        label.textColor = .systemGray5
         return label
     }()
     
@@ -68,8 +69,8 @@ class CellHeaderView: UICollectionReusableView {
     
     private func configureIconImageView() {
         NSLayoutConstraint.activate([
-            iconImageView.topAnchor.constraint(equalTo: topAnchor,constant: 2),
-            iconImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 2),
+            iconImageView.topAnchor.constraint(equalTo: topAnchor,constant: 5),
+            iconImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
             iconImageView.widthAnchor.constraint(equalToConstant: 15),
             iconImageView.heightAnchor.constraint(equalToConstant: 15)
         ])
@@ -78,7 +79,8 @@ class CellHeaderView: UICollectionReusableView {
     private func configureLabel() {
         NSLayoutConstraint.activate([
             label.leadingAnchor.constraint(equalTo: iconImageView.trailingAnchor, constant: 5),
-            label.topAnchor.constraint(equalTo: topAnchor),
+            label.centerYAnchor.constraint(equalTo: iconImageView.centerYAnchor),
+            label.heightAnchor.constraint(equalToConstant: 15),
             label.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
     }

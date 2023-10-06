@@ -22,18 +22,21 @@ class FourthCell: UICollectionViewCell {
     let titleLabel: UILabel = {
        let label = UILabel()
         label.text = "FEELS LIKE"
+        label.textColor = .white
         return label
     }()
     
     let tempLabel: UILabel = {
        let label = UILabel()
         label.text = "31"
+        label.textColor = .white
         return label
     }()
     
     let descriptionLabel: UILabel = {
        let label = UILabel()
         label.numberOfLines = 2
+        label.textColor = .white
         label.text = "Humidy is making it feel warmer"
         return label
     }()

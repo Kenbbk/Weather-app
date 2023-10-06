@@ -26,9 +26,9 @@ class MapCell: UICollectionViewCell {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+        mapView.isUserInteractionEnabled = false
         setup()
         getCurrentLocation()
-        showLocation(latitude: currentLatitude, longitude: currentLongitude, pinTintColor: pinTintColor, annotationText: annotationText, systemImageName: systemImageName)
     }
 
     @available(*, unavailable)
@@ -50,7 +50,6 @@ extension MapCell {
             mapView.bottomAnchor.constraint(equalTo: bottomAnchor),
             mapView.leadingAnchor.constraint(equalTo: leadingAnchor),
             mapView.trailingAnchor.constraint(equalTo: trailingAnchor),
-
         ])
     }
 }
@@ -72,6 +71,8 @@ extension MapCell: CLLocationManagerDelegate {
     }
 
     func setCustomPin(pinTintColor: UIColor, annotationText: String, systemImageName: String) {
+        
+        mapView.removeAnnotations(mapView.annotations)
         let customPin = CustomAnnotation(pinTintColor: pinTintColor,
                                          annotationText: annotationText,
                                          systemImageName: systemImageName)

@@ -55,7 +55,18 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
     // MARK: Helpers
     
     func configure() {
-        view.backgroundColor = .white
+        // UIView 생성
+        let backgroundView = UIView()
+        backgroundView.frame = view.bounds
+        
+        // 배경 이미지 설정
+        let backgroundImage = UIImageView(image: UIImage(named: "cloud3")) // 이미지 이름을 넣으세요
+        backgroundImage.contentMode = .scaleAspectFill // 이미지의 비율을 유지한 채로 화면을 가득 채우도록 설정
+        backgroundImage.frame = backgroundView.bounds
+        backgroundView.addSubview(backgroundImage)
+        
+        // 배경 UIView를 뷰 컨트롤러의 뷰로 설정
+        view.addSubview(backgroundView)
         
         setUI()
         setConstraint()
@@ -154,12 +165,16 @@ class WeatherViewController: UIViewController, CLLocationManagerDelegate {
             }
             
             tempGraphView.setLineChart(temp: dayTemp, time: dayTime)
-//            tempGraphView.setLineChart(temp: WeatherViewModel.fiveDaysTemp[row ?? 0].temp, time: WeatherViewModel.fiveDaysTemp[row ?? 0].time)
         }
     }
     
     private func setForecast() {
-        let forecast: String = "현재 기온은 21도이며 한때 흐린 상태입니다. 오후 12시~오후 1시에 맑은 상태가, 오후 2시에 대체로 흐린상태가 예상됩니다. 오늘 기온은 17도에서 25도사이입니다."
+        // 현재 온도
+        let currentTemp: String = String(format: "%.1f", oneDayWeathers[indexPath.row].timeWeather[0].temp)
+        let lowTemp: String = String(format: "%.1f", oneDayWeathers[indexPath.row].lowTemp)
+        let hightemp: String = String(format: "%.1f", oneDayWeathers[indexPath.row].highTemp)
+        
+        let forecast: String = "현재 기온은 \(currentTemp)도입니다. 오늘 기온은 \(lowTemp)도에서 \(hightemp)도사이입니다."
         
         tempGraphView.setForecast(forecast: forecast)
     }
